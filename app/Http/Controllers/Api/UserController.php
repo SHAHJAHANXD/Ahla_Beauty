@@ -22,7 +22,6 @@ class UserController extends Controller
             'password' => 'required|min:8',
         ]);
         if ($validator->fails()) {
-
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
         }
         $code = mt_rand(000000, 999999);
@@ -66,6 +65,8 @@ class UserController extends Controller
                 $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
                 return response($response, 400);
             } else {
+                $data['token'] = $data->createToken('mytoken')->plainTextToken;
+
                 $response = ['status' => true, 'data' => $data, 'message' => "Account login successfully!"];
                 return response($response, 200);
             }
