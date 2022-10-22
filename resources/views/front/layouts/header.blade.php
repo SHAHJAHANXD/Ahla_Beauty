@@ -25,7 +25,12 @@
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0">
+
+                    @if(Auth::check() == true)
                     <a class="btn btn-outline-success my-2 my-sm-0"  style="background: #EB996E !important;">Wallet</a>
+                    @else
+                    <a class="btn btn-outline-success my-2 my-sm-0" href="{{ route('user.login') }}"  style="background: #EB996E !important;">Sign In</a>
+                    @endif
                     <a class="btn btn-outline-success my-2 my-sm-0" href="{{ route('cart') }}" style="margin-left: 10px;">Cart</a>
                 </form>
             </div>
