@@ -33,6 +33,8 @@ Route::prefix('user')->group(function () {
 
     Route::get('/sign-up', [AuthenticateController::class, 'signup'])->name('user.signup');
     Route::post('/register', [AuthenticateController::class, 'register'])->name('user.register');
+    Route::get('/reset-password', [AuthenticateController::class, 'reset_password'])->name('user.reset_password');
+    Route::post('/verify-reset-password', [AuthenticateController::class, 'verify_reset_password'])->name('user.verify_reset_password');
 
     Route::get('/login', [AuthenticateController::class, 'login'])->name('user.login');
     Route::post('/authenticate', [AuthenticateController::class, 'authenticate'])->name('user.authenticate');
@@ -40,6 +42,10 @@ Route::prefix('user')->group(function () {
     Route::post('/verify-code', [AuthenticateController::class, 'verify_code'])->name('user.verifyCode');
     Route::get('/verify-account', [AuthenticateController::class, 'verify_account'])->name('user.verify_account');
     Route::get('/forget-password', [AuthenticateController::class, 'forget_password'])->name('user.forget_password');
+    Route::post('/send-forget-password', [AuthenticateController::class, 'send_forget_password'])->name('user.send_forget_password');
+
+    Route::get('/logout', [AuthenticateController::class, 'logout'])->name('user.logout');
     Route::get('/resend-code', [AuthenticateController::class, 'ResendCode'])->name('user.resend');
     Route::get('/resend-verification-code', [AuthenticateController::class, 'ResendVerificationCode'])->name('user.ResendVerificationCode');
+
 });

@@ -26,21 +26,4 @@
     gtag('config', 'UA-23581568-13');
 </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v652eace1692a40cfa3763df669d7439c1639079717194" integrity="sha512-Gi7xpJR8tSkrpF7aordPZQlW2DLtzUlZcumS8dMQjwDHEnw9I7ZLyiOj/6tZStRBGtGgN6ceN6cMH8z7etPGlw==" data-cf-beacon='{"rayId":"74f96a835f98ca8c","token":"cd0b4b3a733644fc843ef0b185f98241","version":"2022.8.1","si":100}' crossorigin="anonymous"></script>
-<script>
-    @if(Session::has('error'))
-    toastr.options = {
-        "closeButton": true
-        , "progressBar": true
-    }
-    toastr.error("{{ session('error') }}");
-    @endif
-</script>
-<script>
-    @if(Session::has('success'))
-    toastr.options = {
-        "closeButton": true
-        , "progressBar": true
-    }
-    toastr.success("{{ session('success') }}");
-    @endif
-</script>
+

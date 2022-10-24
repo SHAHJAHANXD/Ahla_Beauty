@@ -5,7 +5,6 @@ Ahla Beauty Services | User Login
 @section('extra-heads')
 <link rel="stylesheet" href="https://preview.colorlib.com/theme/bootstrap/login-form-17/css/A.style.css.pagespeed.cf.PgCMkVC7B9.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-
 @endsection
 @section('content')
 <style>
@@ -30,7 +29,7 @@ Ahla Beauty Services | User Login
                         <div class="text w-100">
                             <h2>Welcome to Sign In</h2>
                             <p>Don't have an account?</p>
-                            <a href="{{ route('user.signup') }}" class="btn btn-white btn-outline-white" style="color: white !important;">Sign Up</a>
+                            <a href="{{ route('user.signup') }}" class="btn btn-white btn-outline-white bg-dark-btn" style="color: white !important;">Sign Up</a>
                         </div>
                     </div>
                     <div class="login-wrap p-4 p-lg-5">
@@ -47,16 +46,32 @@ Ahla Beauty Services | User Login
                         </div>
                         <form action="{{ route('user.authenticate') }}" method="POST" class="signin-form">
                             @csrf
+                            @if (Session::has('success'))
+                            <div class="alert alert-success m-4" style="width: 90%;">
+                                {{ Session::get('success') }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            @endif
+                            @if (Session::has('error'))
+                            <div class="alert alert-danger m-4" style="width: 90%;">
+                                {{ Session::get('error') }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            @endif
                             <div class="form-group mb-3">
                                 <label class="label" for="name">Email</label>
-                                <input type="email" class="form-control" placeholder="Enter Email" name="email">
+                                <input type="email" class="form-control" placeholder="Enter Email" name="email" required>
                                 @if ($errors->has('email'))
                                 <span class="text-danger">{{ $errors->first('email') }}</span>
                                 @endif
                             </div>
                             <div class="form-group mb-3">
                                 <label class="label" for="password">Password</label>
-                                <input type="password" class="form-control" placeholder="Enter Password" name="password">
+                                <input type="password" class="form-control" placeholder="Enter Password" name="password" required>
                                 @if ($errors->has('password'))
                                 <span class="text-danger">{{ $errors->first('password') }}</span>
                                 @endif
@@ -83,3 +98,4 @@ Ahla Beauty Services | User Login
     </div>
 </section>
 @endsection
+

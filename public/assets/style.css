@@ -10903,3 +10903,11 @@ a {
     margin-top: 28px;
     padding: 13px;
 }
+.loom-blur-styles
+{
+    color: green !important;
+}
+.bg-dark-btn:hover
+{
+    color: black !important;
+}
