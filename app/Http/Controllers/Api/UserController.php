@@ -34,11 +34,13 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->phone = $request->phone;
+            $user->role = 'User';
             $user->password = Hash::make($request->password);
             $user->code = $code;
             $user->save();
+            $data = User::where('email', $request->email)->first(['id', 'name','email','phone','code','status','role','created_at','updated_at']);
             if ($user == true) {
-                $response = ['status' => true, 'data' => null, 'message' => "Account created successfully. Please check your email to verify your account. Thank you!"];
+                $response = ['status' => true, 'data' => $data, 'message' => "Account created successfully. Please check your email to verify your account. Thank you!"];
                 return response($response, 200);
             }
         } else {
@@ -60,7 +62,7 @@ class UserController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $data = User::where('email', $request->email)->first();
+            $data = User::where('email', $request->email)->first(['id', 'name','email','phone','code','status','role','created_at','updated_at']);
             if ($data->status == 0) {
                 $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
                 return response($response, 200);
