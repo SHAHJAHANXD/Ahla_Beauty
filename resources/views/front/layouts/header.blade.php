@@ -41,6 +41,7 @@
                     <a class="btn btn-outline-success my-2 my-sm-0" href="{{ route('user.login') }}" style="background: #EB996E !important;">Sign In</a>
                     @endif
                     <a class="btn btn-outline-success my-2 my-sm-0" href="{{ route('cart') }}" style="margin-left: 10px;">Cart</a>
+                    <a class="btn btn-outline-success my-2 my-sm-0" href="{{ route('admin.dashboard') }}" style="margin-left: 10px;">admin</a>
                 </form>
             </div>
         </div>

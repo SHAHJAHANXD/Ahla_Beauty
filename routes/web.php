@@ -54,12 +54,10 @@ Route::prefix('user')->group(function () {
         Route::get('/logout', [AuthenticateController::class, 'logout'])->name('user.logout');
     });
 });
-
-
+Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
 Route::prefix('admin')->group(function () {
 
     Route::group(['middleware' => 'auth:web'], function () {
-        Route::post('/signin', [AdminController::class, 'verify_code'])->name('user.verifyCode');
     });
 });
