@@ -135,6 +135,7 @@ class AuthenticateController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->phone = $request->phone;
+            $user->role = 'User';
             $user->password = Hash::make($request->password);
             $user->code = $code;
             $user->save();
@@ -160,13 +161,16 @@ class AuthenticateController extends Controller
                 'password.max' => 'Password must be less then 254 characters...',
             ]
         );
+        $data = User::where('email', $request->email)->first();
         $found = User::where('email', $request->email)->count();
         if ($found == 0) {
             return redirect()->back()->with('error', 'Email or password is invalid!');
         }
-        $credentials = $request->only('email', 'password');
+        if($data->role == 'User')
+        {
+            $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
-            $data = User::where('email', $request->email)->first();
+
             if ($data->status == 0) {
                 return redirect()->route('user.verify_account')->with('error', 'Your account is not verified. Please verify your account. Thank you!');
             } else {
@@ -174,6 +178,11 @@ class AuthenticateController extends Controller
             }
         } else {
             return redirect()->back()->with('error', 'Email or password is invalid!');
+        }
+        }
+        else
+        {
+            return redirect()->back()->with('error', 'User role is invalid!');
         }
     }
     public function verify_code(Request $request)

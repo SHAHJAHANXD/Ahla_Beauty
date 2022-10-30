@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\AuthenticateController;
 use App\Http\Controllers\UserController;
+use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,13 +41,25 @@ Route::prefix('user')->group(function () {
     Route::get('/login', [AuthenticateController::class, 'login'])->name('user.login');
     Route::post('/authenticate', [AuthenticateController::class, 'authenticate'])->name('user.authenticate');
 
-    Route::post('/verify-code', [AuthenticateController::class, 'verify_code'])->name('user.verifyCode');
-    Route::get('/verify-account', [AuthenticateController::class, 'verify_account'])->name('user.verify_account');
     Route::get('/forget-password', [AuthenticateController::class, 'forget_password'])->name('user.forget_password');
     Route::post('/send-forget-password', [AuthenticateController::class, 'send_forget_password'])->name('user.send_forget_password');
 
-    Route::get('/logout', [AuthenticateController::class, 'logout'])->name('user.logout');
+
     Route::get('/resend-code', [AuthenticateController::class, 'ResendCode'])->name('user.resend');
     Route::get('/resend-verification-code', [AuthenticateController::class, 'ResendVerificationCode'])->name('user.ResendVerificationCode');
 
+    Route::group(['middleware' => 'auth:web'], function () {
+        Route::post('/verify-code', [AuthenticateController::class, 'verify_code'])->name('user.verifyCode');
+        Route::get('/verify-account', [AuthenticateController::class, 'verify_account'])->name('user.verify_account');
+        Route::get('/logout', [AuthenticateController::class, 'logout'])->name('user.logout');
+    });
+});
+
+
+
+Route::prefix('admin')->group(function () {
+
+    Route::group(['middleware' => 'auth:web'], function () {
+        Route::post('/signin', [AdminController::class, 'verify_code'])->name('user.verifyCode');
+    });
 });

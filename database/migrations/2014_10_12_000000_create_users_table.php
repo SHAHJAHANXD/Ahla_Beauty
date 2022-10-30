@@ -20,7 +20,8 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('code')->nullable();
             $table->string('password_code')->nullable();
-            $table->string('status')->default(0);
+            $table->string('account_status')->default(1);
+            $table->string('email_status')->default(0);
             $table->string('password')->nullable();
             $table->string('role')->nullable();
             $table->string('freelancer_license_number')->nullable();
