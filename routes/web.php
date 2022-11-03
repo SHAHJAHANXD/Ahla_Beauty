@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\AuthenticateController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
-use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -54,10 +54,26 @@ Route::prefix('user')->group(function () {
         Route::get('/logout', [AuthenticateController::class, 'logout'])->name('user.logout');
     });
 });
-Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-Route::prefix('admin')->group(function () {
+
+
+
+Route::prefix('administrator')->group(function () {
+
+    Route::get('/login', [AdminController::class, 'login'])->name('admin.login');
+    Route::post('/authenticate', [AdminController::class, 'authenticate'])->name('admin.authenticate');
 
     Route::group(['middleware' => 'auth:web'], function () {
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+        Route::get('/all-users', [AdminController::class, 'allUsers'])->name('admin.allUsers');
+        Route::get('/all-salons', [AdminController::class, 'allSalons'])->name('admin.allSalons');
+        Route::get('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+
+
+
+        Route::get('/categories', [CategoryController::class, 'categories'])->name('admin.categories');
+        Route::post('/post-categories', [CategoryController::class, 'post_categories'])->name('admin.post_categories');
+
+
     });
 });

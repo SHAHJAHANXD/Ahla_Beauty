@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
@@ -15,12 +16,17 @@ class UserController extends Controller
 {
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|unique:users',
-            'phone' => 'required|unique:users',
-            'password' => 'required|min:8',
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required',
+                'email' => 'required|unique:users',
+                'phone' => 'required|unique:users',
+                'password' => 'required|min:8',
+                'profile_image' => 'required|max:4096',
+            ],
+            []
+        );
         if ($validator->fails()) {
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
         }
@@ -37,14 +43,33 @@ class UserController extends Controller
             $user->role = 'User';
             $user->password = Hash::make($request->password);
             $user->code = $code;
+            if ($request->hasfile('profile_image')) {
+                $imageName = time() . '.' . $request->profile_image->extension();
+                $user->profile_image = $imageName;
+                $request->profile_image->move(public_path('images/users'), $imageName);
+            }
             $user->save();
-            $data = User::where('email', $request->email)->first(['id', 'name','email','phone','code','status','role','created_at','updated_at']);
+            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'code', 'email_status', 'profile_image', 'role', 'created_at', 'updated_at']);
+            $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
+
             if ($user == true) {
                 $response = ['status' => true, 'data' => $data, 'message' => "Account created successfully. Please check your email to verify your account. Thank you!"];
                 return response($response, 200);
             }
         } else {
-            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 200);
+        }
+    }
+    public function categories()
+    {
+        $categories = Category::get();
+
+        if ($categories == true) {
+            $response = ['status' => true, 'categories' => $categories, 'message' => "Categories fetched successfully!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'categories' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
             return response($response, 200);
         }
     }
@@ -62,13 +87,13 @@ class UserController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $data = User::where('email', $request->email)->first(['id', 'name','email','phone','code','status','role','created_at','updated_at']);
-            if ($data->status == 0) {
+            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'email_status', 'role', 'created_at', 'updated_at']);
+            $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
+            if ($data->email_status == 0) {
                 $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
                 return response($response, 200);
             } else {
                 $data['token'] = $data->createToken('mytoken')->plainTextToken;
-
                 $response = ['status' => true, 'data' => $data, 'message' => "Account login successfully!"];
                 return response($response, 200);
             }
@@ -92,13 +117,13 @@ class UserController extends Controller
             return response($response, 200);
         } else {
             $code = User::where('email', $request->email)->first();
-            if ($code->status == 1) {
+            if ($code->email_status == 1) {
                 $response = ['status' => false, 'data' => null, 'message' => "Email is already verified. Thank you!"];
                 return response($response, 200);
             } else {
                 if ($code->code == $request->code) {
                     $user_update = User::where('email', $request->email)->first();
-                    $user_update->status = '1';
+                    $user_update->email_status = '1';
                     $user_update->code = 'Verified';
                     $user_update->save();
                     $response = ['status' => true, 'data' => null, 'message' => "Account verified successfully!"];

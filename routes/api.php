@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\ExpertController;
+use App\Http\Controllers\Api\SalonController as ApiSalonController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Salon\SalonController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +22,8 @@ Route::post('/forget-password', [UserController::class, 'forget_password'])->nam
 Route::post('/update-password', [UserController::class, 'update_password'])->name('user.update_password');
 Route::post('/verify-code', [UserController::class, 'verify_code'])->name('user.verifyCode');
 
+Route::get('/get-all-categories', [UserController::class, 'categories'])->name('user.categories');
+
 Route::prefix('user')->group(function () {
 
     Route::post('/register', [UserController::class, 'register'])->name('user.register');
@@ -29,9 +33,10 @@ Route::prefix('user')->group(function () {
 
 
 
-Route::prefix('expert')->group(function () {
+Route::prefix('salon')->group(function () {
 
-    Route::post('/register', [ExpertController::class, 'register'])->name('user.register');
-    Route::post('/login', [ExpertController::class, 'authenticate'])->name('user.login');
+    Route::post('/register', [ApiSalonController::class, 'register'])->name('salon.register');
+    Route::post('/login', [ApiSalonController::class, 'authenticate'])->name('salon.login');
 
 });
+

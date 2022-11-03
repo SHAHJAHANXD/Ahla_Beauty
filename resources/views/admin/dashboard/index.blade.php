@@ -4,34 +4,30 @@ Admin | Dashboard
 @endsection
 @section('content')
 <div class="content-wrapper">
-
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Dashboard v2</h1>
+                    <h1 class="m-0">Dashboard</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Dashboard v2</li>
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                        <li class="breadcrumb-item active">Dashboard</li>
                     </ol>
                 </div>
             </div>
         </div>
     </div>
-
-
     <section class="content">
         <div class="container-fluid">
-
             <div class="row">
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
                         <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">New Users</span>
-                            <span class="info-box-number">2,000</span>
+                            <span class="info-box-text">All Users</span>
+                            <span class="info-box-number">{{ $users->count() }}</span>
                         </div>
 
                     </div>
@@ -41,8 +37,8 @@ Admin | Dashboard
                     <div class="info-box mb-3">
                         <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-users"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">New Experts</span>
-                            <span class="info-box-number">41,410</span>
+                            <span class="info-box-text">All Shops</span>
+                            <span class="info-box-number">{{ $Shop->count() }}</span>
                         </div>
 
                     </div>
@@ -62,20 +58,6 @@ Admin | Dashboard
                     </div>
 
                 </div>
-
-                <div class="col-12 col-sm-6 col-md-3">
-                    <div class="info-box mb-3">
-                        <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Likes</span>
-                            <span class="info-box-number">41,410</span>
-                        </div>
-
-                    </div>
-
-                </div>
-
-
                 <div class="clearfix hidden-md-up"></div>
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
@@ -84,19 +66,11 @@ Admin | Dashboard
                             <span class="info-box-text">Sales</span>
                             <span class="info-box-number">760</span>
                         </div>
-
                     </div>
-
                 </div>
-
-
-
             </div>
 
-
-
             <div class="row">
-
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-6">
@@ -104,116 +78,54 @@ Admin | Dashboard
                                 <div class="card-header">
                                     <h3 class="card-title">Latest Users</h3>
                                     <div class="card-tools">
-                                        <span class="badge badge-danger">8 New Users</span>
-
+                                        <span class="badge badge-danger">{{ $users->count() }} New Users</span>
                                     </div>
                                 </div>
-
                                 <div class="card-body p-0">
                                     <ul class="users-list clearfix">
+                                        @foreach ($users as $users)
                                         <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user1-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Alexander Pierce</a>
-                                            <span class="users-list-date">Today</span>
+                                            @if ($users->profile_image == true)
+                                            <img src="{{ env('APP_URL').'images/users/'.$users->profile_image; }}" style="max-width: 70%;" alt="User Image">
+                                            @else
+                                            <img src="{{ asset('images/guest.png') }}" style="max-width: 70%;" alt="User Image">
+                                            @endif
+
+
+                                            <a class="users-list-name" href="#" style="font-size: 20px;font-weight: 600;">{{ $users->name }}</a>
+                                            <span class="users-list-date">Joined: {{$users->created_at->diffForHumans()}}</span>
                                         </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user8-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Norman</a>
-                                            <span class="users-list-date">Yesterday</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user7-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Jane</a>
-                                            <span class="users-list-date">12 Jan</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user6-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">John</a>
-                                            <span class="users-list-date">12 Jan</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user2-160x160.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Alexander</a>
-                                            <span class="users-list-date">13 Jan</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user5-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Sarah</a>
-                                            <span class="users-list-date">14 Jan</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user4-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Nora</a>
-                                            <span class="users-list-date">15 Jan</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user3-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Nadia</a>
-                                            <span class="users-list-date">15 Jan</span>
-                                        </li>
+                                        @endforeach
                                     </ul>
-
                                 </div>
-
                                 <div class="card-footer text-center">
                                     <a href="javascript:">View All Users</a>
                                 </div>
-
                             </div>
-
                         </div>
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Latest Experts</h3>
+                                    <h3 class="card-title">Latest Shop</h3>
                                     <div class="card-tools">
-                                        <span class="badge badge-danger">8 New Experts</span>
+                                        <span class="badge badge-danger">{{ $Shop->count() }} New Shop</span>
 
                                     </div>
                                 </div>
 
                                 <div class="card-body p-0">
                                     <ul class="users-list clearfix">
+                                        @foreach ($Shop as $Shop)
                                         <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user1-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Alexander Pierce</a>
-                                            <span class="users-list-date">Today</span>
+                                            @if ($Shop->profile_image == true)
+                                            <img src="{{ env('APP_URL').'images/users/'.$Shop->profile_image; }}" style="max-width: 70%;" alt="User Image">
+                                            @else
+                                            <img src="{{ asset('images/guest.png') }}" style="max-width: 70%;" alt="User Image">
+                                            @endif
+                                            <a class="users-list-name" href="#" style="font-size: 20px;font-weight: 600;">{{ $Shop->name }}</a>
+                                            <span class="users-list-date">Joined: {{$Shop->created_at->diffForHumans()}}</span>
                                         </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user8-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Norman</a>
-                                            <span class="users-list-date">Yesterday</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user7-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Jane</a>
-                                            <span class="users-list-date">12 Jan</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user6-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">John</a>
-                                            <span class="users-list-date">12 Jan</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user2-160x160.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Alexander</a>
-                                            <span class="users-list-date">13 Jan</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user5-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Sarah</a>
-                                            <span class="users-list-date">14 Jan</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user4-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Nora</a>
-                                            <span class="users-list-date">15 Jan</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin') }}/dist/img/user3-128x128.jpg" alt="User Image">
-                                            <a class="users-list-name" href="#">Nadia</a>
-                                            <span class="users-list-date">15 Jan</span>
-                                        </li>
+                                        @endforeach
                                     </ul>
 
                                 </div>

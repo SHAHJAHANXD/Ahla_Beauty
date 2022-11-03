@@ -20,6 +20,25 @@ class AdminSeeder extends Seeder
             'email' => 'admin@ahla.com',
             'role' => 'Admin',
             'email_status' => '1',
+            'phone' => '12345678',
+            'password' => bcrypt('12345678'),
+        ]);
+        User::create([
+            'name' => 'Ahla User',
+            'email' => 'User@ahla.com',
+            'role' => 'User',
+            'email_status' => '1',
+            'phone' => '12345678',
+            'Code' => 'Verified',
+            'password' => bcrypt('12345678'),
+        ]);
+        User::create([
+            'name' => 'Ahla Salon',
+            'email' => 'Salon@ahla.com',
+            'role' => 'Salon',
+            'email_status' => '1',
+            'phone' => '12345678',
+            'Code' => 'Verified',
             'password' => bcrypt('12345678'),
         ]);
     }

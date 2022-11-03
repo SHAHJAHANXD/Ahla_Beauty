@@ -17,14 +17,13 @@ class ExpertController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'name' => 'required',
+                'salon_name_en' => 'required',
+                'salon_name_ar' => 'required',
                 'email' => 'required|unique:users',
                 'phone' => 'required|unique:users',
                 'password' => 'required|min:8',
-                'freelancer_license_number' => 'required',
-                'salon_name_en' => 'required',
                 'commercial_registration_number' => 'required',
-                'certificate' => 'required',
+                'certificate' => 'required|max:4096',
                 'category' => 'required',
                 'iban' => 'required',
                 'country' => 'required',
@@ -35,7 +34,6 @@ class ExpertController extends Controller
                 'location' => 'required',
             ],
             [
-                'name.required' => 'Profile name is required!',
 
                 'email.required' => 'Email is required!',
 
@@ -43,11 +41,11 @@ class ExpertController extends Controller
 
                 'password.required' => 'Password is required!',
 
-                'freelancer_license_number.required' => 'Freelancer license number is required!',
+                'salon_name_en.required' => 'Salon english name is required!',
 
-                'salon_name_en.required' => 'Salon name is required!',
+                'salon_name_ar.required' => 'Salon arabic name is required!',
 
-                'commercia_registration_number.required' => 'Commercial registration number is required!',
+                'commercial_registration_number.required' => 'Commercial registration number is required!',
 
                 'certificate.required' => 'Certificate image is required!',
 
@@ -78,11 +76,10 @@ class ExpertController extends Controller
         });
         if ($mail == true) {
             $user = new User();
-            $user->name = $request->name;
+            $user->name = $request->salon_name_en;
             $user->email = $request->email;
             $user->phone = $request->phone;
-            $user->role = 'Expert';
-            $user->freelancer_license_number = $request->freelancer_license_number;
+            $user->role = 'Salon';
             $user->salon_name_en = $request->salon_name_en;
             $user->salon_name_ar = $request->salon_name_ar;
             $user->commercial_registration_number = $request->commercial_registration_number;
@@ -91,8 +88,6 @@ class ExpertController extends Controller
                 $user->certificate = $imageName;
                 $request->certificate->move(public_path('images/certificates'), $imageName);
             }
-
-
             $user->category = $request->category;
             $user->iban = $request->iban;
             $user->country = $request->country;
