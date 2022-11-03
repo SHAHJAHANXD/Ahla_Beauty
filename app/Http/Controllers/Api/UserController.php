@@ -43,6 +43,8 @@ class UserController extends Controller
             $user->role = 'User';
             $user->password = Hash::make($request->password);
             $user->code = $code;
+            $user->latitude = $request->latitude;
+            $user->longitude = $request->longitude;
             if ($request->hasfile('profile_image')) {
                 $imageName = time() . '.' . $request->profile_image->extension();
                 $user->profile_image = $imageName;

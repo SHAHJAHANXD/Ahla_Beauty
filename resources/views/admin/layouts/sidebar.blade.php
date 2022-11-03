@@ -64,9 +64,17 @@
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.categories') }}" class="nav-link">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <i class="nav-icon fas fa-columns"></i>
                         <p>
                             Categories
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.countries') }}" class="nav-link">
+                        <i class="nav-icon fas fa-flag"></i>
+                        <p>
+                            Countries
                         </p>
                     </a>
                 </li>

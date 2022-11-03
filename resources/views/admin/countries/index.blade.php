@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title')
-Admin | All Category
+Admin | All Country
 @endsection
 @section('extra-heads')
 <link rel="stylesheet" href="{{ asset('admin') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -13,12 +13,12 @@ Admin | All Category
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Category DataTables</h1>
+                    <h1>Country DataTables</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Category DataTables</li>
+                        <li class="breadcrumb-item active">Country DataTables</li>
                     </ol>
                 </div>
             </div>
@@ -30,10 +30,10 @@ Admin | All Category
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">All Category DataTable</h3>
+                            <h3 class="card-title">All Country DataTable</h3>
                             <div class="card-body" style="text-align: end;">
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-default">
-                                    Add Category
+                                    Add Country
                                 </button>
                             </div>
                         </div>
@@ -41,51 +41,32 @@ Admin | All Category
                             <table id="example1" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">Category Id</th>
-                                        <th class="text-center">Category Image</th>
-                                        <th class="text-center">Category Name</th>
-                                        <th class="text-center">Category Status</th>
-                                        <th class="text-center">Category Actions</th>
+                                        <th class="text-center">Country Id</th>
+                                        <th class="text-center">Country Image</th>
+                                        <th class="text-center">Country Name</th>
                                         <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($category as $category)
+                                    @foreach ($countries as $countries)
                                     <tr>
-                                        <td class="text-center">{{ $category->id }}</td>
+                                        <td class="text-center">{{ $countries->id }}</td>
                                         <td class="text-center">
-                                            @if ($category->category_image == true)
-                                            <img src="{{$category->category_image; }}" style=" border-radius: 100px; width: 50px; height: 50px;" alt="User Image">
+                                            @if ($countries->image == true)
+                                            <img src="{{$countries->image; }}" style=" border-radius: 100px; width: 50px; height: 50px;" alt="User Image">
                                             @else
                                             <img src="{{ asset('images/guest.png') }}" style=" border-radius: 100px; height: 50px; width: 50px;" alt="User Image">
                                             @endif
                                         </td>
-                                        <td class="text-center">{{ $category->category_name }}</td>
-                                        @if ($category->category_status == 1)
-                                        <td class="text-center">
-                                            <a class="btn btn-success">Active</a>
-                                        </td>
-                                        @else
-                                        <td class="text-center">
-                                            <a class="btn btn-danger">Blocked</a>
-                                        </td>
-                                        @endif
-                                        @if ($category->category_status == 1)
-                                        <td class="text-center">
-                                            <a href="{{ route('admin.blockCategory', $category->id) }}" class="btn btn-danger">Block</a>
-                                        </td>
-                                        @else
-                                        <td class="text-center">
-                                            <a href="{{ route('admin.activeCategory', $category->id) }}" class="btn btn-success">Active</a>
-                                        </td>
-                                        @endif
+                                        <td class="text-center">{{ $countries->name }}</td>
+
                                         <td class="text-center">
 
                                             <form method="POST"
-                                            action="{{ route('admin.deletecategories', $category->id) }}">
+                                            action="{{ route('admin.deletecountries', $countries->id) }}">
                                             @csrf
                                             <input name="_method" type="hidden" value="DELETE">
-                                            <a class="btn btn-primary" onclick="return confirm('Are you sure? You want to edit this record?')" href="/administrator/edit-category/{{ $category->id }}">Edit</a>
+                                            <a class="btn btn-primary" onclick="return confirm('Are you sure? You want to edit this record?')" href="/administrator/edit-countries/{{ $countries->id }}">Edit</a>
                                             <button type="submit"
                                                 class="btn btn-danger show_confirm"
                                                 data-toggle="tooltip" title='Delete'>Delete</button>
@@ -107,23 +88,23 @@ Admin | All Category
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">New Category</h4>
+                <h4 class="modal-title">New Country</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('admin.post_categories') }}" enctype="multipart/form-data" method="POST">
+                <form action="{{ route('admin.post_countries') }}" enctype="multipart/form-data" method="POST">
                     @csrf
-                    <label for="name">Category name</label>
-                    <input type="text" class="form-control" id="name" name="category_name" placeholder="Enter Category Name">
-                    @if ($errors->has('category_name'))
-                    <span class="text-danger">{{ $errors->first('category_name') }}</span>
+                    <label for="name">Country name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter Country Name">
+                    @if ($errors->has('name'))
+                    <span class="text-danger">{{ $errors->first('name') }}</span>
                     @endif
-                    <label for="file">Category Image</label>
-                    <input type="file" name="category_image" class="form-control" id="file" multiple>
-                    @if ($errors->has('category_image'))
-                    <span class="text-danger">{{ $errors->first('category_image') }}</span>
+                    <label for="file">Country Image</label>
+                    <input type="file" name="image" class="form-control" id="file" multiple>
+                    @if ($errors->has('image'))
+                    <span class="text-danger">{{ $errors->first('image') }}</span>
                     @endif
                     <div class="div" style="margin-top: 20px; ">
                         <button type="submit" class="btn btn-primary form-control">Save</button>

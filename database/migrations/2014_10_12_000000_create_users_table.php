@@ -44,7 +44,8 @@ return new class extends Migration
             $table->string('saturday')->nullable();
             $table->string('sunday')->nullable();
             $table->string('shift')->nullable();
-            $table->string('location')->nullable();
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

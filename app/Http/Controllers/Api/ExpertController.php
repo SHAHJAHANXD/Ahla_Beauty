@@ -62,8 +62,6 @@ class ExpertController extends Controller
                 'service_type.required' => 'Service type is required!',
 
                 'shift.required' => 'Shift is required!',
-
-                'location.required' => 'Salon location is required!',
             ]
         );
         if ($validator->fails()) {
@@ -82,6 +80,8 @@ class ExpertController extends Controller
             $user->role = 'Salon';
             $user->salon_name_en = $request->salon_name_en;
             $user->salon_name_ar = $request->salon_name_ar;
+            $user->latitude = $request->latitude;
+            $user->longitude = $request->longitude;
             $user->commercial_registration_number = $request->commercial_registration_number;
             if ($request->hasfile('certificate')) {
                 $imageName = time() . '.' . $request->certificate->extension();
