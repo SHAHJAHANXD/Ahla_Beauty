@@ -69,6 +69,7 @@ Route::prefix('administrator')->group(function () {
         Route::get('/all-users', [AdminController::class, 'allUsers'])->name('admin.allUsers');
         Route::get('/all-salons', [AdminController::class, 'allSalons'])->name('admin.allSalons');
         Route::get('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+        Route::get('/all-staff', [AdminController::class, 'allStaff'])->name('admin.allStaff');
 
 
 
@@ -93,3 +94,4 @@ Route::prefix('administrator')->group(function () {
     });
 });
 
+Route::get('/email', [AuthenticateController::class, 'email'])->name('user.email');

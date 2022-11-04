@@ -41,5 +41,14 @@ class AdminSeeder extends Seeder
             'Code' => 'Verified',
             'password' => bcrypt('12345678'),
         ]);
+        User::create([
+            'name' => 'Ahla Staff',
+            'email' => 'Staff@ahla.com',
+            'role' => 'Staff',
+            'email_status' => '1',
+            'phone' => '12345678',
+            'Code' => 'Verified',
+            'password' => bcrypt('12345678'),
+        ]);
     }
 }

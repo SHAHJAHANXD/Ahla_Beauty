@@ -60,6 +60,12 @@
                                 <p>Salons</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.allStaff') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Staff</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item">

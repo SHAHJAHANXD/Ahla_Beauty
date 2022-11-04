@@ -12,6 +12,18 @@ use Illuminate\Support\Facades\Validator;
 
 class SalonController extends Controller
 {
+
+    public function getStaff($salon_id)
+    {
+        $user = User::where('salon_id', $salon_id)->get(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status',  'level',  'expertise', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
+        if ($user->count() == 0) {
+            $response = ['status' => false, 'data' => null, 'message' => "ID is not valid. Thank you!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => true, 'data' => $user, 'message' => "Data fetched successfully. Thank you!"];
+            return response($response, 200);
+        }
+    }
     public function register(Request $request)
     {
         $validator = Validator::make(
@@ -31,43 +43,25 @@ class SalonController extends Controller
                 'average_orders' => 'required',
                 'service_type' => 'required',
                 'shift' => 'required',
-                'location' => 'required',
                 'profile_image' => 'required|max:4096',
             ],
             [
                 'profile_image.required' => 'Image is required!',
-
                 'profile_image.max' => 'The maximum size of Image must be less than 4MB. Thank you!',
-
                 'email.required' => 'Email is required!',
-
                 'phone.required' => 'Phone number is required!',
-
                 'password.required' => 'Password is required!',
-
                 'salon_name_en.required' => 'Salon english name is required!',
-
                 'salon_name_ar.required' => 'Salon arabic name is required!',
-
                 'commercial_registration_number.required' => 'Commercial registration number is required!',
-
                 'certificate.required' => 'Certificate image is required!',
-
                 'category.required' => 'Category is required!',
-
                 'iban.required' => 'IBAN number is required!',
-
                 'country.required' => 'Country is required!',
-
                 'city.required' => 'City is required!',
-
                 'average_orders.required' => 'Avergae orders is required!',
-
                 'service_type.required' => 'Service type is required!',
-
                 'shift.required' => 'Shift is required!',
-
-                'location.required' => 'Salon location is required!',
             ]
         );
         if ($validator->fails()) {
@@ -99,7 +93,6 @@ class SalonController extends Controller
             $user->average_orders = $request->average_orders;
             $user->service_type = $request->service_type;
             $user->shift = $request->shift;
-            $user->location = $request->location;
             $user->password = Hash::make($request->password);
             $user->code = $code;
             $user->latitude = $request->latitude;
@@ -400,7 +393,7 @@ class SalonController extends Controller
                 $user->sunday = 'Yes';
             }
             $user->save();
-            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'location', 'created_at', 'updated_at']);
+            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
             $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
             if ($user == true) {
                 $response = ['status' => true, 'data' => $data, 'message' => "Account created successfully. Please check your email to verify your account. Thank you!"];
@@ -414,7 +407,7 @@ class SalonController extends Controller
     public function authenticate(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|  ',
+            'email' => 'required',
             'password' => 'required|min:8',
         ]);
         if ($validator->fails()) {
@@ -425,7 +418,7 @@ class SalonController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'location', 'created_at', 'updated_at']);
+            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
             $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
             if ($data->email_status == 0) {
                 $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];

@@ -14,8 +14,42 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function userProfile($id)
+    {
+        $Users = User::where('id', $id)->get();
+        $User = User::where('id', $id)->first();
+        if ($Users->count() == 0) {
+            $response = ['status' => false, 'data' => null, 'message' => "User id is not valid. Thank you!"];
+            return response($response, 200);
+        }
+        elseif($User->role == 'Expert')
+        {
+            $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'location', 'created_at', 'updated_at']);
+            $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
+            return response($response, 200);
+        }
+        elseif($User->role == 'Salon')
+        {
+            $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'location', 'created_at', 'updated_at']);
+            $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
+            return response($response, 200);
+        }
+        elseif($User->role == 'User')
+        {
+            $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'code', 'email_status', 'profile_image', 'role', 'created_at', 'updated_at']);
+            $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
+            return response($response, 200);
+        }
+        else
+        {
+            $response = ['status' => false, 'data' => null, 'message' => "User Role is not valid. Thank you!"];
+            return response($response, 200);
+        }
+    }
     public function register(Request $request)
     {
+
+
         $validator = Validator::make(
             $request->all(),
             [

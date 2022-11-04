@@ -23,6 +23,9 @@ return new class extends Migration
             $table->string('password_code')->nullable();
             $table->string('account_status')->default(1);
             $table->string('email_status')->default(0);
+            $table->string('salon_id')->nullable();
+            $table->string('expertise')->nullable();
+            $table->string('level')->nullable();
             $table->string('password')->nullable();
             $table->string('role')->nullable();
             $table->string('freelancer_license_number')->nullable();

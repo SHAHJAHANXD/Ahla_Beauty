@@ -30,7 +30,11 @@ class AdminController extends Controller
         $users = User::where('role','User')->get();
         return view('admin.users.table', compact('users'));
     }
-
+    public function allStaff()
+    {
+        $users = User::where('role','Staff')->get();
+        return view('admin.Staff.table', compact('users'));
+    }
     public function authenticate(Request $request)
     {
         $request->validate(

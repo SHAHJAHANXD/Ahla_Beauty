@@ -6,100 +6,69 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class ExpertController extends Controller
 {
+
+    public function update()
+    {
+        return Auth::user();
+    }
     public function register(Request $request)
     {
         $validator = Validator::make(
             $request->all(),
             [
-                'salon_name_en' => 'required',
-                'salon_name_ar' => 'required',
+
+                'name' => 'required',
                 'email' => 'required|unique:users',
                 'phone' => 'required|unique:users',
                 'password' => 'required|min:8',
-                'commercial_registration_number' => 'required',
-                'certificate' => 'required|max:4096',
-                'category' => 'required',
-                'iban' => 'required',
-                'country' => 'required',
-                'city' => 'required',
-                'average_orders' => 'required',
-                'service_type' => 'required',
                 'shift' => 'required',
-                'location' => 'required',
+                'expertise' => 'required',
+                'level' => 'required',
+                'salon_id' => 'required',
             ],
             [
-
+                'name.required' => 'Name is required!',
                 'email.required' => 'Email is required!',
-
                 'phone.required' => 'Phone number is required!',
-
                 'password.required' => 'Password is required!',
-
-                'salon_name_en.required' => 'Salon english name is required!',
-
-                'salon_name_ar.required' => 'Salon arabic name is required!',
-
-                'commercial_registration_number.required' => 'Commercial registration number is required!',
-
-                'certificate.required' => 'Certificate image is required!',
-
-                'category.required' => 'Category is required!',
-
-                'iban.required' => 'IBAN number is required!',
-
-                'country.required' => 'Country is required!',
-
-                'city.required' => 'City is required!',
-
-                'average_orders.required' => 'Avergae orders is required!',
-
-                'service_type.required' => 'Service type is required!',
-
                 'shift.required' => 'Shift is required!',
+                'expertise.required' => 'Expertise is required!',
+                'level.required' => 'Level is required!',
+                'salon_id.required' => 'Salon id is required!',
             ]
         );
         if ($validator->fails()) {
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
         }
+        $password = Str::random(10);
         $code = mt_rand(000000, 999999);
-        $mail = Mail::send('emails.verifyemail', ['code' => $code], function ($message) use ($request) {
-            $message->to($request->email);
-            $message->subject('Verify Email');
-        });
+        $data = ['email' => $request->email, 'password' => $password, 'name' => $request->name, 'code' => $code];
+        $mail = Mail::send(
+            'emails.password',
+            $data,
+            function ($message) use ($data) {
+                $message->to($data['email'])->subject('Your account details');
+            }
+        );
         if ($mail == true) {
             $user = new User();
-            $user->name = $request->salon_name_en;
+            $user->name = $request->name;
             $user->email = $request->email;
             $user->phone = $request->phone;
-            $user->role = 'Salon';
-            $user->salon_name_en = $request->salon_name_en;
-            $user->salon_name_ar = $request->salon_name_ar;
-            $user->latitude = $request->latitude;
-            $user->longitude = $request->longitude;
-            $user->commercial_registration_number = $request->commercial_registration_number;
-            if ($request->hasfile('certificate')) {
-                $imageName = time() . '.' . $request->certificate->extension();
-                $user->certificate = $imageName;
-                $request->certificate->move(public_path('images/certificates'), $imageName);
-            }
-            $user->category = $request->category;
-            $user->iban = $request->iban;
-            $user->country = $request->country;
-            $user->city = $request->city;
-            $user->average_orders = $request->average_orders;
-            $user->service_type = $request->service_type;
+            $user->role = 'Staff';
+            $user->salon_id = $request->salon_id;
             $user->shift = $request->shift;
-            $user->location = $request->location;
-            $user->password = Hash::make($request->password);
+            $user->expertise = $request->expertise;
+            $user->level = $request->level;
+            $user->password = Hash::make($password);
             $user->code = $code;
-
-
             if ($request->monday == true) {
                 $user->monday = 'Yes';
             }
@@ -413,14 +382,13 @@ class ExpertController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::guard('api')->attempt($credentials)) {
             $data = User::where('email', $request->email)->first();
             if ($data->status == 0) {
                 $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
                 return response($response, 200);
             } else {
-                $data['token'] = $data->createToken('mytoken')->plainTextToken;
-
+                $data['token'] = $data->createToken('Laravel Password Grant Client')->accessToken;
                 $response = ['status' => true, 'data' => $data, 'message' => "Account login successfully!"];
                 return response($response, 200);
             }

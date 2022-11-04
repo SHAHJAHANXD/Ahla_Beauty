@@ -13,12 +13,12 @@ Admin | Edit Country
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Edit Country DataTables</h1>
+                    <h1>Edit Country</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Edit Country DataTables</li>
+                        <li class="breadcrumb-item active">Edit Country</li>
                     </ol>
                 </div>
             </div>
@@ -30,7 +30,7 @@ Admin | Edit Country
                 <div class="col-6">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">All Country DataTable</h3>
+                            <h3 class="card-title">{{ $countries->name }} Country</h3>
                         </div>
                         <div class="card-body">
                             <form action="{{ route('admin.post_edit_countries') }}" enctype="multipart/form-data" method="POST">

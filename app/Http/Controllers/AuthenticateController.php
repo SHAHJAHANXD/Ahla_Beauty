@@ -13,10 +13,15 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthenticateController extends Controller
 {
+    public function email()
+    {
+        return view('emails.password');
+    }
     public function signup()
     {
         return view('front.signup');
     }
+
     public function login()
     {
         return view('front.signin');
