@@ -76,17 +76,19 @@ Route::prefix('administrator')->group(function () {
         Route::get('/categories', [CategoryController::class, 'categories'])->name('admin.categories');
         Route::post('/post-categories', [CategoryController::class, 'post_categories'])->name('admin.post_categories');
         Route::delete('/delete-category/{id}', [CategoryController::class, 'deletecategories'])->name('admin.deletecategories');
-
         Route::get('/category-active-status/{id}', [CategoryController::class, 'activeCategory'])->name('admin.activeCategory');
         Route::get('/category-block-status/{id}', [CategoryController::class, 'blockCategory'])->name('admin.blockCategory');
         Route::get('/edit-category/{id}', [CategoryController::class, 'edit_categories'])->name('admin.edit_categories');
         Route::post('/post-edit-category', [CategoryController::class, 'post_edit_categories'])->name('admin.post_edit_categories');
 
 
+
         Route::get('/countries', [CountryController::class, 'countries'])->name('admin.countries');
         Route::post('/post-countries', [CountryController::class, 'post_countries'])->name('admin.post_countries');
         Route::delete('/delete-countries/{id}', [CountryController::class, 'deletecountries'])->name('admin.deletecountries');
 
+        Route::get('/add-cities/{id}', [CountryController::class, 'add_cities'])->name('admin.add_cities');
+        Route::post('/post-cities', [CountryController::class, 'post_cities'])->name('admin.post_cities');
 
         Route::get('/edit-countries/{id}', [CountryController::class, 'edit_countries'])->name('admin.edit_categories');
         Route::post('/post-edit-countries', [CountryController::class, 'post_edit_countries'])->name('admin.post_edit_countries');

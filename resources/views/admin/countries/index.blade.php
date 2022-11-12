@@ -44,6 +44,7 @@ Admin | All Country
                                         <th class="text-center">Country Id</th>
                                         <th class="text-center">Country Image</th>
                                         <th class="text-center">Country Name</th>
+                                        <th class="text-center">Cities</th>
                                         <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
@@ -59,19 +60,17 @@ Admin | All Country
                                             @endif
                                         </td>
                                         <td class="text-center">{{ $countries->name }}</td>
-
                                         <td class="text-center">
-
-                                            <form method="POST"
-                                            action="{{ route('admin.deletecountries', $countries->id) }}">
-                                            @csrf
-                                            <input name="_method" type="hidden" value="DELETE">
-                                            <a class="btn btn-primary" onclick="return confirm('Are you sure? You want to edit this record?')" href="/administrator/edit-countries/{{ $countries->id }}">Edit</a>
-                                            <button type="submit"
-                                                class="btn btn-danger show_confirm"
-                                                data-toggle="tooltip" title='Delete'>Delete</button>
-                                        </form>
-
+                                            <a class="btn btn-primary" href="/administrator/add-cities/{{ $countries->id }}">Add City</a>
+                                            <a class="btn btn-primary" href="/administrator/view-all-cities/{{ $countries->id }}">View Cities</a>
+                                        </td>
+                                        <td class="text-center">
+                                            <form method="POST" action="{{ route('admin.deletecountries', $countries->id) }}">
+                                                @csrf
+                                                <input name="_method" type="hidden" value="DELETE">
+                                                <a class="btn btn-primary" onclick="return confirm('Are you sure? You want to edit this record?')" href="/administrator/edit-countries/{{ $countries->id }}">Edit</a>
+                                                <button type="submit" class="btn btn-danger show_confirm" data-toggle="tooltip" title='Delete'>Delete</button>
+                                            </form>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -177,5 +176,6 @@ Admin | All Country
                 }
             });
     });
+
 </script>
 @endsection

@@ -18,7 +18,7 @@ class SalonController extends Controller
         $user = User::where('salon_id', $salon_id)->get(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status',  'level',  'expertise', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
         if ($user->count() == 0) {
             $response = ['status' => false, 'data' => null, 'message' => "ID is not valid. Thank you!"];
-            return response($response, 200);
+            return response($response, 401);
         } else {
             $response = ['status' => true, 'data' => $user, 'message' => "Data fetched successfully. Thank you!"];
             return response($response, 200);
@@ -401,36 +401,35 @@ class SalonController extends Controller
             }
         } else {
             $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
-            return response($response, 200);
+            return response($response, 401);
         }
     }
     public function authenticate(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required',
+            'email' => 'required|  ',
             'password' => 'required|min:8',
         ]);
         if ($validator->fails()) {
 
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
         }
-
         $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
+        if (!auth()->attempt($credentials)) {
+            $response = ['status' => false, 'message' => "Email or password is invalid. Thank you!"];
+            return response($response, 401);
+        } else {
             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
             $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
             if ($data->email_status == 0) {
                 $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
-                return response($response, 200);
+                return response($response, 401);
             } else {
-                $data['token'] = $data->createToken('mytoken')->plainTextToken;
+                $data['token'] = auth()->user()->createToken('API Token')->accessToken;
                 $response = ['status' => true, 'data' => $data, 'message' => "Account login successfully!"];
                 return response($response, 200);
             }
-        } else {
-            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
-            return response($response, 200);
         }
     }
+
 }

@@ -67,7 +67,7 @@ class ExpertController extends Controller
             $user->shift = $request->shift;
             $user->expertise = $request->expertise;
             $user->level = $request->level;
-            $user->password = Hash::make($password);
+            $user->password = Hash::make($request->password);
             $user->code = $code;
             if ($request->monday == true) {
                 $user->monday = 'Yes';
@@ -366,7 +366,7 @@ class ExpertController extends Controller
             }
         } else {
             $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
-            return response($response, 200);
+            return response($response, 401);
         }
     }
     public function authenticate(Request $request)
@@ -379,22 +379,21 @@ class ExpertController extends Controller
 
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
         }
-
         $credentials = $request->only('email', 'password');
-
-        if (Auth::guard('api')->attempt($credentials)) {
-            $data = User::where('email', $request->email)->first();
-            if ($data->status == 0) {
+        if (!auth()->attempt($credentials)) {
+            $response = ['status' => false, 'message' => "Email or password is invalid. Thank you!"];
+            return response($response, 401);
+        } else {
+            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
+            $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
+            if ($data->email_status == 0) {
                 $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
-                return response($response, 200);
+                return response($response, 401);
             } else {
-                $data['token'] = $data->createToken('Laravel Password Grant Client')->accessToken;
+                $data['token'] = auth()->user()->createToken('API Token')->accessToken;
                 $response = ['status' => true, 'data' => $data, 'message' => "Account login successfully!"];
                 return response($response, 200);
             }
-        } else {
-            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
-            return response($response, 200);
         }
     }
 }

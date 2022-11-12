@@ -17,7 +17,7 @@ class ImageController extends Controller
             return response($response, 200);
         } else {
             $response = ['status' => true, 'data' => $image, 'message' => "User id is not valid. Thank you!"];
-            return response($response, 200);
+            return response($response, 401);
         }
     }
     public function uploadImage(Request $request)
@@ -46,7 +46,7 @@ class ImageController extends Controller
                 return response($response, 200);
             } else {
                 $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
-                return response($response, 200);
+                return response($response, 401);
             }
         }
     }
