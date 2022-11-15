@@ -147,16 +147,6 @@ Admin | All Country
     });
 
 </script>
-<script>
-    @if(Session::has('success'))
-    toastr.options = {
-        "closeButton": true
-        , "progressBar": true
-    }
-    toastr.success("{{ session('success') }}");
-    @endif
-
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script type="text/javascript">
     $('.show_confirm').click(function(event) {

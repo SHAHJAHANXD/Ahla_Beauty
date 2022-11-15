@@ -53,8 +53,7 @@ class UserController extends Controller
                 'phone' => 'required|unique:users',
                 'password' => 'required|min:8',
                 'profile_image' => 'required|max:4096',
-            ],
-            []
+            ]
         );
         if ($validator->fails()) {
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
@@ -109,7 +108,13 @@ class UserController extends Controller
     {
 
         $Countries = Countries::get();
-
+        $cities = Countries::with('cities')->get();
+        foreach($cities as $cities)
+        {
+            $Countries = [
+                $cities,
+            ];
+        }
         if ($Countries == true) {
             $response = ['status' => true, 'Countries' => $Countries, 'message' => "Countries fetched successfully!"];
             return response($response, 200);

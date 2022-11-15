@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Shifts;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -67,6 +68,7 @@ class SalonController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
         }
+
         $code = mt_rand(000000, 999999);
         $mail = Mail::send('emails.verifyemail', ['code' => $code], function ($message) use ($request) {
             $message->to($request->email);
@@ -92,7 +94,9 @@ class SalonController extends Controller
             $user->city = $request->city;
             $user->average_orders = $request->average_orders;
             $user->service_type = $request->service_type;
-            $user->shift = $request->shift;
+
+
+
             $user->password = Hash::make($request->password);
             $user->code = $code;
             $user->latitude = $request->latitude;
@@ -393,6 +397,16 @@ class SalonController extends Controller
                 $user->sunday = 'Yes';
             }
             $user->save();
+            $shift = $request->shift;
+
+            foreach ($shift as $shift) {
+                $time = new Shifts();
+                $time->user_id = $user->id;
+                $time->shift_name = $shift['shift_name'];
+                $time->shift_start_time = $shift['shift_start_time'];
+                $time->shift_end_time = $shift['shift_end_time'];
+                $time->save();
+            }
             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
             $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
             if ($user == true) {
@@ -404,6 +418,7 @@ class SalonController extends Controller
             return response($response, 401);
         }
     }
+
     public function authenticate(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -421,6 +436,7 @@ class SalonController extends Controller
         } else {
             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
             $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
+            $data['shift'] = Shifts::where('user_id',$data->id)->get();
             if ($data->email_status == 0) {
                 $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
                 return response($response, 401);

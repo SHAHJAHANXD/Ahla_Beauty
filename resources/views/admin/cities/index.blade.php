@@ -36,7 +36,8 @@ Admin | Add City
                             <form action="/administrator/post-cities" enctype="multipart/form-data" method="POST">
                                 @csrf
                                 <label for="country_name">Country name</label>
-                                <input type="text" class="form-control" id="country_name" name="country" value="{{ $countries->name }}" readonly>
+                                <input type="text" class="form-control" hidden name="country" value="{{ $countries->id }}" readonly>
+                                <input type="text" class="form-control" value="{{ $countries->name }}" placeholder="{{ $countries->name }}" readonly>
                                 <label for="city_name">Add City name</label>
                                 <input type="text" class="form-control" id="city_name" name="city" placeholder="Enter City Name">
                                 @if ($errors->has('city'))

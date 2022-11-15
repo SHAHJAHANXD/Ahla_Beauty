@@ -81,15 +81,12 @@ Admin | All Category
                                         @endif
                                         <td class="text-center">
 
-                                            <form method="POST"
-                                            action="{{ route('admin.deletecategories', $category->id) }}">
-                                            @csrf
-                                            <input name="_method" type="hidden" value="DELETE">
-                                            <a class="btn btn-primary" onclick="return confirm('Are you sure? You want to edit this record?')" href="/administrator/edit-category/{{ $category->id }}">Edit</a>
-                                            <button type="submit"
-                                                class="btn btn-danger show_confirm"
-                                                data-toggle="tooltip" title='Delete'>Delete</button>
-                                        </form>
+                                            <form method="POST" action="{{ route('admin.deletecategories', $category->id) }}">
+                                                @csrf
+                                                <input name="_method" type="hidden" value="DELETE">
+                                                <a class="btn btn-primary" onclick="return confirm('Are you sure? You want to edit this record?')" href="/administrator/edit-category/{{ $category->id }}">Edit</a>
+                                                <button type="submit" class="btn btn-danger show_confirm" data-toggle="tooltip" title='Delete'>Delete</button>
+                                            </form>
 
                                         </td>
                                     </tr>
@@ -167,16 +164,6 @@ Admin | All Category
     });
 
 </script>
-<script>
-    @if(Session::has('success'))
-    toastr.options = {
-        "closeButton": true
-        , "progressBar": true
-    }
-    toastr.success("{{ session('success') }}");
-    @endif
-
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script type="text/javascript">
     $('.show_confirm').click(function(event) {
@@ -196,5 +183,6 @@ Admin | All Category
                 }
             });
     });
+
 </script>
 @endsection

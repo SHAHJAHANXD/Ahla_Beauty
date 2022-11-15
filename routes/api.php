@@ -53,8 +53,8 @@ Route::prefix('salon')->group(function () {
     });
 });
 
-Route::post('/upload-image', [ImageController::class, 'uploadImage'])->name('user.uploadImage')->middleware('auth:api');
-Route::get('/uploaded-images/{id}', [ImageController::class, 'getUploadedImage'])->name('user.getUploadedImage')->middleware('auth:api');
+Route::post('/upload-image', [ImageController::class, 'uploadImage'])->name('user.uploadImage');
+Route::get('/uploaded-images/{id}', [ImageController::class, 'getUploadedImage'])->name('user.getUploadedImage');
 
 Route::prefix('staff')->group(function () {
 
