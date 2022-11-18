@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Countries;
+use App\Models\Location;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Locale;
 
 class UserController extends Controller
 {
@@ -23,7 +25,7 @@ class UserController extends Controller
         $User = User::where('id', $id)->first();
         if ($Users->count() == 0) {
             $response = ['status' => false, 'data' => null, 'message' => "User id is not valid. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         } elseif ($User->role == 'Expert') {
             $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'location', 'created_at', 'updated_at']);
             $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
@@ -38,9 +40,56 @@ class UserController extends Controller
             return response($response, 200);
         } else {
             $response = ['status' => false, 'data' => null, 'message' => "User Role is not valid. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         }
     }
+    public function Location(Request $request)
+    {
+        $id = Auth::guard('api')->user()->id;
+        $location = new Location();
+        $location->user_id = $id;
+        $location->lat = $request->lat;
+        $location->lng = $request->lng;
+        $location->address = $request->address;
+        $location->save();
+        if ($location == true) {
+            $response = ['status' => true, 'data' => $location, 'message' => "Record Saved Successfully. Thank you!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
+    public function UserLocation(Request $request)
+    {
+        $id = Auth::guard('api')->user()->id;
+        $location = Location::where('user_id', $id)->get();
+        if ($location == true) {
+            $response = ['status' => true, 'data' => $location, 'message' => "Record Fetched Successfully. Thank you!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
+    public function DeleteLocation($id)
+    {
+
+        $found = Location::where('id', $id)->count();
+        if ($found == 0) {
+            $response = ['status' => true, 'data' => false, 'message' => "Record not found!"];
+            return response($response, 422);
+        }
+        $location = Location::where('id', $id)->delete();
+        if ($location == true) {
+            $response = ['status' => true, 'data' => null, 'message' => "Record Deleted Successfully. Thank you!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
+
     public function register(Request $request)
     {
 
@@ -88,7 +137,7 @@ class UserController extends Controller
             }
         } else {
             $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         }
     }
     public function categories()
@@ -101,7 +150,7 @@ class UserController extends Controller
             return response($response, 200);
         } else {
             $response = ['status' => false, 'categories' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         }
     }
     public function Api_countries()
@@ -109,8 +158,7 @@ class UserController extends Controller
 
         $Countries = Countries::get();
         $cities = Countries::with('cities')->get();
-        foreach($cities as $cities)
-        {
+        foreach ($cities as $cities) {
             $Countries = [
                 $cities,
             ];
@@ -120,10 +168,32 @@ class UserController extends Controller
             return response($response, 200);
         } else {
             $response = ['status' => false, 'Countries' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         }
     }
 
+    public function get_frequ_saloon()
+    {
+        $salon = User::where('role', 'Salon')->first();
+        if ($salon == true) {
+            $response = ['status' => true, 'data' => $salon, 'message' => "Record fetched successfully!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
+    public function get_saloon($id)
+    {
+        $salon = User::where('role', 'Salon')->where('id', $id)->first();
+        if ($salon == true) {
+            $response = ['status' => true, 'data' => $salon, 'message' => "Record fetched successfully!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
     public function authenticate(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -137,13 +207,14 @@ class UserController extends Controller
         $credentials = $request->only('email', 'password');
         if (!auth()->attempt($credentials)) {
             $response = ['status' => false, 'message' => "Email or password is invalid. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         } else {
             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'email_status', 'role', 'created_at', 'updated_at']);
+            $email_status = User::where('email', $request->email)->first(['id', 'email_status']);
             $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
             if ($data->email_status == 0) {
-                $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
-                return response($response, 401);
+                $response = ['status' => false, 'data' => $email_status, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
+                return response($response, 400);
             } else {
                 $data['token'] = auth()->user()->createToken('API Token')->accessToken;
                 $response = ['status' => true, 'data' => $data, 'message' => "Account login successfully!"];
@@ -196,7 +267,7 @@ class UserController extends Controller
     //         $authGuard = Auth::guard('api');
     //         if(!$authGuard->attempt($credentials)){
     //             $response = ['status' => true, 'data' => [], 'message' => "Email or password is invalid!"];
-    //             return response($response, 401);
+    //             return response($response, 400);
 
     //         } else {
     //             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'email_status', 'role', 'created_at', 'updated_at']);
@@ -231,12 +302,12 @@ class UserController extends Controller
         $user = User::where('email', $request->email)->count();
         if ($user == 0) {
             $response = ['status' => false, 'data' => null, 'message' => "Email address is not found."];
-            return response($response, 401);
+            return response($response, 400);
         } else {
             $code = User::where('email', $request->email)->first();
             if ($code->email_status == 1) {
                 $response = ['status' => false, 'data' => null, 'message' => "Email is already verified. Thank you!"];
-                return response($response, 401);
+                return response($response, 400);
             } else {
                 if ($code->code == $request->code) {
                     $user_update = User::where('email', $request->email)->first();
@@ -247,7 +318,7 @@ class UserController extends Controller
                     return response($response, 200);
                 } else {
                     $response = ['status' => false, 'data' => null, 'message' => "Code is Invalid!"];
-                    return response($response, 401);
+                    return response($response, 400);
                 }
             }
         }
@@ -265,7 +336,7 @@ class UserController extends Controller
         $found = User::where('email', $email)->count();
         if ($found == 0) {
             $response = ['status' => false, 'data' => null, 'message' => "Email address not found!"];
-            return response($response, 401);
+            return response($response, 400);
         }
         $code = mt_rand(000000, 999999);
         $mail = Mail::send('emails.forgetEmail', ['code' => $code], function ($message) use ($request) {
@@ -282,7 +353,7 @@ class UserController extends Controller
             }
         } else {
             $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         }
     }
     public function update_password(Request $request)
@@ -315,7 +386,7 @@ class UserController extends Controller
         $found = User::where('email', $email)->count();
         if ($found == 0) {
             $response = ['status' => false, 'data' => null, 'message' => "Email address not found!"];
-            return response($response, 401);
+            return response($response, 400);
         } else {
             $code = User::where('email', $email)->first();
             if ($code->password_code == $request->code) {
@@ -327,7 +398,7 @@ class UserController extends Controller
                 return response($response, 200);
             } else {
                 $response = ['status' => false, 'data' => null, 'message' => "Code is invalid!"];
-                return response($response, 401);
+                return response($response, 400);
             }
         }
     }

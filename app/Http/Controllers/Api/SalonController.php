@@ -19,7 +19,7 @@ class SalonController extends Controller
         $user = User::where('salon_id', $salon_id)->get(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status',  'level',  'expertise', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
         if ($user->count() == 0) {
             $response = ['status' => false, 'data' => null, 'message' => "ID is not valid. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         } else {
             $response = ['status' => true, 'data' => $user, 'message' => "Data fetched successfully. Thank you!"];
             return response($response, 200);
@@ -43,6 +43,8 @@ class SalonController extends Controller
                 'city' => 'required',
                 'average_orders' => 'required',
                 'service_type' => 'required',
+                'services_for' => 'required',
+
                 'shift' => 'required',
                 'profile_image' => 'required|max:4096',
             ],
@@ -79,6 +81,7 @@ class SalonController extends Controller
             $user->name = $request->salon_name_en;
             $user->email = $request->email;
             $user->phone = $request->phone;
+            $user->services_for = $request->services_for;
             $user->role = 'Salon';
             $user->salon_name_en = $request->salon_name_en;
             $user->salon_name_ar = $request->salon_name_ar;
@@ -415,7 +418,7 @@ class SalonController extends Controller
             }
         } else {
             $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         }
     }
 
@@ -432,14 +435,14 @@ class SalonController extends Controller
         $credentials = $request->only('email', 'password');
         if (!auth()->attempt($credentials)) {
             $response = ['status' => false, 'message' => "Email or password is invalid. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         } else {
             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
             $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
-            $data['shift'] = Shifts::where('user_id',$data->id)->get();
+            $data['shift'] = Shifts::where('user_id', $data->id)->get();
             if ($data->email_status == 0) {
                 $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
-                return response($response, 401);
+                return response($response, 400);
             } else {
                 $data['token'] = auth()->user()->createToken('API Token')->accessToken;
                 $response = ['status' => true, 'data' => $data, 'message' => "Account login successfully!"];
@@ -447,5 +450,4 @@ class SalonController extends Controller
             }
         }
     }
-
 }

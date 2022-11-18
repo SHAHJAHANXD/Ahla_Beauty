@@ -366,7 +366,7 @@ class ExpertController extends Controller
             }
         } else {
             $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         }
     }
     public function authenticate(Request $request)
@@ -382,13 +382,13 @@ class ExpertController extends Controller
         $credentials = $request->only('email', 'password');
         if (!auth()->attempt($credentials)) {
             $response = ['status' => false, 'message' => "Email or password is invalid. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         } else {
             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
             $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
             if ($data->email_status == 0) {
                 $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
-                return response($response, 401);
+                return response($response, 400);
             } else {
                 $data['token'] = auth()->user()->createToken('API Token')->accessToken;
                 $response = ['status' => true, 'data' => $data, 'message' => "Account login successfully!"];

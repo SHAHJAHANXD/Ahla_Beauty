@@ -57,7 +57,7 @@ class OffersController extends Controller
             return response($response, 200);
         } else {
             $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
-            return response($response, 401);
+            return response($response, 400);
         }
     }
 }

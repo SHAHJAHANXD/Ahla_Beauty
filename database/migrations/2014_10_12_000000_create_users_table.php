@@ -37,6 +37,7 @@ return new class extends Migration
             $table->string('iban')->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();
+            $table->string('services_for')->nullable();
             $table->string('average_orders')->nullable();
             $table->string('service_type')->nullable();
             $table->string('monday')->nullable();

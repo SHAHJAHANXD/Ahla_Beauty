@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\OffersController;
 use App\Http\Controllers\Api\PackagesController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CountryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -35,9 +36,18 @@ Route::get('/get-all-countries', [UserController::class, 'Api_countries'])->name
 Route::prefix('user')->group(function () {
     Route::post('/register', [UserController::class, 'register'])->name('user.register');
     Route::post('/login', [UserController::class, 'authenticate'])->name('user.login');
+    Route::get('/get-saloon/{id}', [UserController::class, 'get_saloon'])->name('user.get_saloon')->middleware('auth:api');
+    Route::get('/get-freques-salons', [UserController::class, 'get_frequ_saloon'])->name('user.get_frequ_saloon')->middleware('auth:api');
 
 });
 
+Route::post('/save-location', [UserController::class, 'Location'])->name('user.Location')->middleware('auth:api');
+Route::get('/get-user-location', [UserController::class, 'UserLocation'])->name('user.UserLocation')->middleware('auth:api');
+Route::get('/delete-user-location/{id}', [UserController::class, 'DeleteLocation'])->name('user.DeleteLocation')->middleware('auth:api');
+
+Route::post('/save-banner', [BannerController::class, 'SaveBanner'])->name('user.SaveBanner')->middleware('auth:api');
+Route::get('/get-banner', [BannerController::class, 'GetBanner'])->name('user.GetBanner')->middleware('auth:api');
+Route::get('/delete-banner/{id}', [BannerController::class, 'DeleteBanner'])->name('user.DeleteBanner')->middleware('auth:api');
 
 
 Route::prefix('salon')->group(function () {

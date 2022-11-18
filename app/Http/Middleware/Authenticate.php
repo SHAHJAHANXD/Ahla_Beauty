@@ -18,10 +18,21 @@ class Authenticate extends Middleware
         if ($segment == 'administrator') {
             return route('admin.login');
         }
+        $segment = $request->segment(1);
+        if ($segment == 'api') {
+            abort(response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Login To Your account!',
+                ],
+                401
+            ));
+        }
 
-        if (! $request->expectsJson()) {
+        if (!$request->expectsJson()) {
             return route('user.login');
         }
 
     }
+
 }
