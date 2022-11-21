@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\SalonController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\OffersController;
 use App\Http\Controllers\Api\PackagesController;
+use App\Http\Controllers\Api\ServicesController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CountryController;
@@ -38,7 +39,6 @@ Route::prefix('user')->group(function () {
     Route::post('/login', [UserController::class, 'authenticate'])->name('user.login');
     Route::get('/get-saloon/{id}', [UserController::class, 'get_saloon'])->name('user.get_saloon')->middleware('auth:api');
     Route::get('/get-freques-salons', [UserController::class, 'get_frequ_saloon'])->name('user.get_frequ_saloon')->middleware('auth:api');
-
 });
 
 Route::post('/save-location', [UserController::class, 'Location'])->name('user.Location')->middleware('auth:api');
@@ -51,20 +51,37 @@ Route::get('/delete-banner/{id}', [BannerController::class, 'DeleteBanner'])->na
 
 
 Route::prefix('salon')->group(function () {
-
     Route::post('/get-staff/{salon_id}', [SalonController::class, 'getStaff'])->name('salon.getStaff')->middleware('auth:api');
     Route::post('/register', [SalonController::class, 'register'])->name('salon.register');
     Route::post('/login', [SalonController::class, 'authenticate'])->name('salon.login');
     Route::prefix('offers')->group(function () {
         Route::post('/create', [OffersController::class, 'create'])->name('offers.create')->middleware('auth:api');
+        Route::get('/by-user', [OffersController::class, 'get'])->name('offers.get')->middleware('auth:api');
+        Route::post('/edit', [OffersController::class, 'Edit'])->name('offers.Edit')->middleware('auth:api');
+        Route::post('/delete', [OffersController::class, 'Delete'])->name('offers.Delete')->middleware('auth:api');
+        Route::post('/active-status', [OffersController::class, 'Active'])->name('offers.Active')->middleware('auth:api');
+        Route::post('/block-status', [OffersController::class, 'Block'])->name('offers.Black')->middleware('auth:api');
     });
     Route::prefix('packages')->group(function () {
         Route::post('/create', [PackagesController::class, 'create'])->name('packages.create')->middleware('auth:api');
+        Route::get('/by-user', [PackagesController::class, 'get'])->name('packages.get')->middleware('auth:api');
+        Route::post('/edit', [PackagesController::class, 'Edit'])->name('packages.Edit')->middleware('auth:api');
+        Route::post('/delete', [PackagesController::class, 'Delete'])->name('packages.Delete')->middleware('auth:api');
+        Route::post('/active-status', [PackagesController::class, 'Active'])->name('packages.Active')->middleware('auth:api');
+        Route::post('/block-status', [PackagesController::class, 'Block'])->name('packages.Black')->middleware('auth:api');
+    });
+    Route::prefix('services')->group(function () {
+        Route::post('/create', [ServicesController::class, 'create'])->name('services.create')->middleware('auth:api');
+        Route::get('/by-user', [ServicesController::class, 'get'])->name('services.get')->middleware('auth:api');
+        Route::post('/edit', [ServicesController::class, 'Edit'])->name('services.Edit')->middleware('auth:api');
+        Route::post('/delete', [ServicesController::class, 'Delete'])->name('services.Delete')->middleware('auth:api');
+        Route::post('/active-status', [ServicesController::class, 'Active'])->name('services.Active')->middleware('auth:api');
+        Route::post('/block-status', [ServicesController::class, 'Block'])->name('services.Black')->middleware('auth:api');
     });
 });
 
 Route::post('/upload-image', [ImageController::class, 'uploadImage'])->name('user.uploadImage');
-Route::get('/uploaded-images/{id}', [ImageController::class, 'getUploadedImage'])->name('user.getUploadedImage');
+// Route::get('/uploaded-images', [ImageController::class, 'getUploadedImage'])->name('user.getUploadedImage');
 
 Route::prefix('staff')->group(function () {
 

@@ -16,15 +16,15 @@ return new class extends Migration
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
             $table->string('user_id')->nullable();
-            $table->string('package_image')->nullable();
-            $table->string('package_name')->nullable();
-            $table->string('package_price')->nullable();
-            $table->string('package_discount')->nullable();
-            $table->string('package_description')->nullable();
-            $table->string('package_publish_date')->nullable();
-            $table->string('package_expiry_date')->nullable();
-            $table->string('package_category')->nullable();
-            $table->string('package_status')->default(1);
+            $table->string('image')->nullable();
+            $table->string('name')->nullable();
+            $table->string('price')->nullable();
+            $table->string('discount')->nullable();
+            $table->string('description')->nullable();
+            $table->string('publish_date')->nullable();
+            $table->string('expiry_date')->nullable();
+            $table->string('category')->nullable();
+            $table->string('status')->default(1);
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Offers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class OffersController extends Controller
@@ -14,46 +15,108 @@ class OffersController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'offer_image' => 'required',
-                'offer_title' => 'required',
-                'offer_discount' => 'required',
-                'offer_description' => 'required',
-                'offer_publish_date' => 'required',
-                'offer_expiry_date' => 'required',
-                'offer_category' => 'required',
-                'user_id' => 'required',
+                'image' => 'required',
+                'title' => 'required',
+                'discount' => 'required',
+                'description' => 'required',
+                'publish_date' => 'required',
+                'expiry_date' => 'required',
+                'category' => 'required',
             ],
             [
-                'offer_image.required' => 'Offer image is required',
-                'offer_title.required' => 'Offer title is required',
-                'offer_discount.required' => 'Offer discount is required',
-                'offer_description.required' => 'Offer description is required',
-                'offer_publish_date.required' => 'Offer publish date is required',
-                'offer_expiry_date.required' => 'Offer expiry date is required',
-                'offer_category.required' => 'Offer category is required',
-                'user_id.required' => 'User id is required',
+                'image.required' => 'Offer image is required',
+                'title.required' => 'Offer title is required',
+                'discount.required' => 'Offer discount is required',
+                'description.required' => 'Offer description is required',
+                'publish_date.required' => 'Offer publish date is required',
+                'expiry_date.required' => 'Offer expiry date is required',
+                'category.required' => 'Offer category is required',
             ]
         );
         if ($validator->fails()) {
-
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
         }
-        $offer = new Offers();
-        $offer->user_id = $request->user_id;
-        if ($request->hasfile('offer_image')) {
-            $imageName = env('APP_URL') . 'images/offers/' . time() . '.' . $request->offer_image->extension();
-            $offer->offer_image = $imageName;
-            $request->offer_image->move(public_path('images/offers'), $imageName);
-        }
-        $offer->offer_title = $request->offer_title;
-        $offer->offer_discount = $request->offer_discount;
-        $offer->offer_description = $request->offer_description;
-        $offer->offer_publish_date = $request->offer_publish_date;
-        $offer->offer_expiry_date = $request->offer_expiry_date;
-        $offer->offer_category = $request->offer_category;
-        $offer->save();
+        $id = Auth::user()->id;
+        $offer = Offers::create($request->all() + ['user_id' => $id]);
         if ($offer == true) {
-            $response = ['status' => true, 'data' => null, 'message' => "Offers created successfully!"];
+            $response = ['status' => true, 'data' => null, 'message' => "Record Stored Successfully!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
+    public function get()
+    {
+        $id = Auth::user()->id;
+        $offer = Offers::where('user_id', $id)->get();
+        if ($offer == true) {
+            $response = ['status' => true, 'data' => $offer, 'message' => "Record Fetched Successfully!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
+    public function Edit(Request $request)
+    {
+        $count =  Offers::where('id', $request->id)->count();
+        if ($count == 0) {
+            $response = ['status' => true, 'data' => null, 'message' => "Record ID not found!"];
+            return response($response, 200);
+        }
+        $id = Auth::user()->id;
+        $offer = Offers::where('id', $request->id)->update($request->all() + ['user_id' => $id]);
+        if ($offer == true) {
+            $response = ['status' => true, 'data' => null, 'message' => "Record Edited Successfully!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
+    public function Delete(Request $request)
+    {
+        $count =  Offers::where('id', $request->id)->count();
+        if ($count == 0) {
+            $response = ['status' => true, 'data' => null, 'message' => "Record ID not found!"];
+            return response($response, 200);
+        }
+        $offer = Offers::where('id', $request->id)->delete();
+        if ($offer == true) {
+            $response = ['status' => true, 'data' => null, 'message' => "Record Deleted Successfully!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
+    public function Active(Request $request)
+    {
+        $count =  Offers::where('id', $request->id)->count();
+        if ($count == 0) {
+            $response = ['status' => true, 'data' => null, 'message' => "Record ID not found!"];
+            return response($response, 200);
+        }
+        $offer = Offers::where('id', $request->id)->update(['status' => 1]);
+        if ($offer == true) {
+            $response = ['status' => true, 'data' => null, 'message' => "Record Updated Successfully!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
+    public function Block(Request $request)
+    {
+        $count =  Offers::where('id', $request->id)->count();
+        if ($count == 0) {
+            $response = ['status' => true, 'data' => null, 'message' => "Record ID not found!"];
+            return response($response, 200);
+        }
+        $offer = Offers::where('id', $request->id)->update(['status' => 0]);
+        if ($offer == true) {
+            $response = ['status' => true, 'data' => null, 'message' => "Record Updated Successfully!"];
             return response($response, 200);
         } else {
             $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
