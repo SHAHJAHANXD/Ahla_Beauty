@@ -210,8 +210,9 @@ class UserController extends Controller
             return response($response, 400);
         } else {
             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'email_status', 'role', 'created_at', 'updated_at']);
-            $email_status = User::where('email', $request->email)->first(['id', 'email_status']);
+
             $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
+            $email_status = User::where('email', $request->email)->first(['id', 'email_status']);
             if ($data->email_status == 0) {
                 $response = ['status' => false, 'data' => $email_status, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
                 return response($response, 400);
@@ -222,74 +223,6 @@ class UserController extends Controller
             }
         }
     }
-    // public function authenticate(Request $request)
-    // {
-    // $validator = Validator::make($request->all(), [
-    //     'email' => 'required|  ',
-    //     'password' => 'required|min:8',
-    // ]);
-    // if ($validator->fails()) {
-
-    //     return response()->json(['status' => false, 'errors' => $validator->errors()]);
-    // }
-
-    // $credentials = $request->only('email', 'password');
-
-    // if (Auth::guard('api')->attempt($credentials)) {
-    //     $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'email_status', 'role', 'created_at', 'updated_at']);
-    //     $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
-    //     if ($data->email_status == 0) {
-    //         $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
-    //         return response($response, 200);
-    //     } else {
-    //         $data['token'] = Auth::user()->createToken('API Token')->accessToken;
-    //         // $data['token'] = $data->createToken('mytoken')->plainTextToken;
-    //         $response = ['status' => true, 'data' => $data, 'message' => "Account login successfully!"];
-    //         return response($response, 200);
-    //     }
-    // } else {
-    //     $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
-    //     return response($response, 200);
-    // }
-
-
-    //   $validator = Validator::make($request->all(), [
-    //         'email' => 'required|  ',
-    //         'password' => 'required|min:8',
-    //     ]);
-    //     if ($validator->fails()) {
-
-    //         return response()->json(['status' => false, 'errors' => $validator->errors()]);
-    //     }
-
-    //     $credentials = $request->only('email', 'password');
-    //     try {
-    //         $authGuard = Auth::guard('api');
-    //         if(!$authGuard->attempt($credentials)){
-    //             $response = ['status' => true, 'data' => [], 'message' => "Email or password is invalid!"];
-    //             return response($response, 400);
-
-    //         } else {
-    //             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'email_status', 'role', 'created_at', 'updated_at']);
-    //             if ($data->email_status == 0) {
-    //                 $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
-    //                 return response($response, 200);
-    //             } else {
-    //                 $user = $authGuard->user();
-    //                 $user['profile_image'] =  env('APP_URL') . 'images/users/' . $user->profile_image;
-
-    //                 $code = 200;
-    //                 $data['token'] = $user->createToken('user')->accessToken;
-    //                 // $data['token'] = $data->createToken('mytoken')->plainTextToken;
-    //                 $response = ['status' => true, 'data' => $data, 'message' => "Account login successfully!"];
-    //                 return response($response, 200);
-    //             }
-    //         }
-    //     } catch (Exception $e) {
-    //         $data = ['error' => $e->getMessage()];
-    //     }
-    //     return response()->json($data, $code);
-    // }
     public function verify_code(Request $request)
     {
         $validator = Validator::make($request->all(), [

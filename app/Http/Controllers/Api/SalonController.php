@@ -440,8 +440,9 @@ class SalonController extends Controller
             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
             $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
             $data['shift'] = Shifts::where('user_id', $data->id)->get();
+            $email_status = User::where('email', $request->email)->first(['id', 'email_status']);
             if ($data->email_status == 0) {
-                $response = ['status' => false, 'data' => null, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
+                $response = ['status' => false, 'data' => $email_status, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
                 return response($response, 400);
             } else {
                 $data['token'] = auth()->user()->createToken('API Token')->accessToken;
