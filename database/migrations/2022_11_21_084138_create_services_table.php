@@ -21,7 +21,9 @@ return new class extends Migration
             $table->string('distance_cost')->nullable();
             $table->string('availablity')->nullable();
             $table->string('category')->nullable();
-            $table->string('status')->default(1);
+            // $table->string('start_time')->nullable();
+            // $table->string('end_time')->nullable();
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

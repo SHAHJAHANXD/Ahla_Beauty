@@ -92,8 +92,6 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-
-
         $validator = Validator::make(
             $request->all(),
             [
@@ -101,7 +99,6 @@ class UserController extends Controller
                 'email' => 'required|unique:users',
                 'phone' => 'required|unique:users',
                 'password' => 'required|min:8',
-                'profile_image' => 'required|max:4096',
             ]
         );
         if ($validator->fails()) {
@@ -122,14 +119,14 @@ class UserController extends Controller
             $user->code = $code;
             $user->latitude = $request->latitude;
             $user->longitude = $request->longitude;
-            if ($request->hasfile('profile_image')) {
-                $imageName = time() . '.' . $request->profile_image->extension();
-                $user->profile_image = $imageName;
-                $request->profile_image->move(public_path('images/users'), $imageName);
-            }
+            // if ($request->hasfile('profile_image')) {
+            //     $imageName = time() . '.' . $request->profile_image->extension();
+            //     $user->profile_image = $imageName;
+            //     $request->profile_image->move(public_path('images/users'), $imageName);
+            // }
             $user->save();
             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'code', 'email_status', 'profile_image', 'role', 'created_at', 'updated_at']);
-            $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
+            // $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
 
             if ($user == true) {
                 $response = ['status' => true, 'data' => $data, 'message' => "Account created successfully. Please check your email to verify your account. Thank you!"];
@@ -211,7 +208,7 @@ class UserController extends Controller
         } else {
             $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'email_status', 'role', 'created_at', 'updated_at']);
 
-            $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
+            // $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
             $email_status = User::where('email', $request->email)->first(['id', 'email_status']);
             if ($data->email_status == 0) {
                 $response = ['status' => false, 'data' => $email_status, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
@@ -247,12 +244,53 @@ class UserController extends Controller
                     $user_update->email_status = '1';
                     $user_update->code = 'Verified';
                     $user_update->save();
-                    $response = ['status' => true, 'data' => null, 'message' => "Account verified successfully!"];
+                    if ($code->role == "User") {
+                        $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'email_status', 'role', 'created_at', 'updated_at']);
+                    }
+                    if ($code->role == "Salon") {
+                        $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
+                    }
+                    if ($code->role == "Staff") {
+                        $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
+                    }
+
+                    $response = ['status' => true, 'data' => $data, 'message' => "Account verified successfully!"];
                     return response($response, 200);
                 } else {
                     $response = ['status' => false, 'data' => null, 'message' => "Code is Invalid!"];
                     return response($response, 400);
                 }
+            }
+        }
+    }
+    public function resend_code(Request $request)
+    {
+        $found = User::where('email', $request->email)->count();
+        if ($found == 0) {
+            $response = ['status' => false, 'data' => null, 'message' => "Email address is not found."];
+            return response($response, 400);
+        }
+        $code = User::where('email', $request->email)->first();
+        if ($code->email_status == 1) {
+            $response = ['status' => false, 'data' => null, 'message' => "Email is already verified. Thank you!"];
+            return response($response, 400);
+        } else {
+            $code = mt_rand(000000, 999999);
+            $mail = Mail::send('emails.verifyemail', ['code' => $code], function ($message) use ($request) {
+                $message->to($request->email);
+                $message->subject('Verify Email');
+            });
+            if ($mail == true) {
+                $user = User::where('email', $request->email)->first();
+                $user->code = $code;
+                $user->save();
+                if ($user == true) {
+                    $response = ['status' => true, 'data' => null, 'message' => "Code sent successfully. Please check your email to verify your account. Thank you!"];
+                    return response($response, 200);
+                }
+            } else {
+                $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+                return response($response, 400);
             }
         }
     }

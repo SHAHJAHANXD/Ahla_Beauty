@@ -27,8 +27,11 @@ class ImageController extends Controller
                 $user->image_path = $imagepath;
                 $user->save();
             }
+            $data = [
+                'url' => $imagepath,
+            ];
             if ($user == true) {
-                $response = ['status' => true, 'data' => $imagepath, 'message' => "Image is uploaded successfully!"];
+                $response = ['status' => true, 'data' => $data, 'message' => "Image is uploaded successfully!"];
                 return response($response, 200);
             } else {
                 $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];

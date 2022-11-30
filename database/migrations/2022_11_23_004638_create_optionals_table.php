@@ -13,16 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('packages', function (Blueprint $table) {
+        Schema::create('optionals', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id')->nullable();
-            $table->string('name')->nullable();
+            $table->string('package_id')->nullable();
+            $table->string('service_id')->nullable();
+            $table->string('title')->nullable();
             $table->string('price')->nullable();
-            $table->string('discount')->nullable();
-            $table->string('description')->nullable();
-            $table->string('publish_date')->nullable();
-            $table->string('expiry_date')->nullable();
-            $table->string('status')->default(1);
             $table->timestamps();
         });
     }
@@ -34,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('packages');
+        Schema::dropIfExists('optionals');
     }
 };

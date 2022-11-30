@@ -120,11 +120,8 @@ class AuthenticateController extends Controller
             [
                 'name.required' => 'Name is required...',
                 'name.max' => 'Name must be less then 254 characters...',
-
                 'email.required' => 'Email is required...',
-
                 'phone.required' => 'Phone number is required...',
-
                 'password.required' => 'Password is required...',
                 'password.min' => 'Password must be atleast 8 characters...',
                 'password.max' => 'Password must be less then 254 characters...',
