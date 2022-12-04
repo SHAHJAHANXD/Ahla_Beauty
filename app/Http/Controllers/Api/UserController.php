@@ -119,13 +119,9 @@ class UserController extends Controller
             $user->code = $code;
             $user->latitude = $request->latitude;
             $user->longitude = $request->longitude;
-            // if ($request->hasfile('profile_image')) {
-            //     $imageName = time() . '.' . $request->profile_image->extension();
-            //     $user->profile_image = $imageName;
-            //     $request->profile_image->move(public_path('images/users'), $imageName);
-            // }
+
             $user->save();
-            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'code', 'email_status', 'profile_image', 'role', 'created_at', 'updated_at']);
+            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'code', 'email_status', 'account_status', 'profile_image', 'role', 'created_at', 'updated_at']);
             // $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
 
             if ($user == true) {
@@ -173,7 +169,7 @@ class UserController extends Controller
     {
         $salon = User::where('role', 'Salon')->first();
         if ($salon == true) {
-            $response = ['status' => true, 'data' => $salon, 'message' => "Record fetched successfully!"];
+            $response = ['status' => true, 'data' => [$salon], 'message' => "Record fetched successfully!"];
             return response($response, 200);
         } else {
             $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];

@@ -38,6 +38,7 @@ class OffersController extends Controller
         }
         $id = Auth::user()->id;
         $offer = Offers::create($request->all() + ['user_id' => $id]);
+        
         if ($offer == true) {
             $response = ['status' => true, 'data' => null, 'message' => "Record Stored Successfully!"];
             return response($response, 200);

@@ -94,4 +94,5 @@ Route::prefix('staff')->group(function () {
     Route::post('/register', [ExpertController::class, 'register'])->name('staff.register');
     Route::post('/login', [ExpertController::class, 'authenticate'])->name('staff.login');
     Route::post('/update', [ExpertController::class, 'update'])->middleware('auth:api');
+    Route::post('/get', [ExpertController::class, 'get'])->middleware('auth:api');
 });

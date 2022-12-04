@@ -129,7 +129,7 @@ class ServicesController extends Controller
             $response = ['status' => true, 'data' => null, 'message' => "Record ID not found!"];
             return response($response, 200);
         }
-        $Services = Services::where('id', $request->id)->update(['status' => 1]);
+        $Services = Services::where('id', $request->id)->update(['is_published' => 1]);
         if ($Services == true) {
             $response = ['status' => true, 'data' => null, 'message' => "Record Updated Successfully!"];
             return response($response, 200);
@@ -145,7 +145,7 @@ class ServicesController extends Controller
             $response = ['status' => true, 'data' => null, 'message' => "Record ID not found!"];
             return response($response, 200);
         }
-        $Services = Services::where('id', $request->id)->update(['status' => 0]);
+        $Services = Services::where('id', $request->id)->update(['is_published' => 0]);
         if ($Services == true) {
             $response = ['status' => true, 'data' => null, 'message' => "Record Updated Successfully!"];
             return response($response, 200);
