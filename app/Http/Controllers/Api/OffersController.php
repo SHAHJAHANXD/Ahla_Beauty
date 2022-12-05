@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\OfferCategories;
 use App\Models\Offers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,6 +39,15 @@ class OffersController extends Controller
         }
         $id = Auth::user()->id;
         $offer = Offers::create($request->all() + ['user_id' => $id]);
+
+        if ($request->category == true) {
+            foreach ($request->category as $categorys) {
+                $time = new OfferCategories();
+                $time->offer_id = $offer->id;
+                $time->category_id = $categorys['id'];
+                $time->save();
+            }
+        }
         
         if ($offer == true) {
             $response = ['status' => true, 'data' => null, 'message' => "Record Stored Successfully!"];

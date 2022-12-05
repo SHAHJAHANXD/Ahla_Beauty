@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/response', [UserController::class, 'response'])->name('user.response')->middleware('auth:api');
 
 Route::get('/profile', [UserController::class, 'userProfile'])->name('user.userProfile')->middleware('auth:api');
+Route::post('/update-profile', [UserController::class, 'UpdateProfile'])->name('user.UpdateProfile')->middleware('auth:api');
 
 Route::post('/forget-password', [UserController::class, 'forget_password'])->name('user.forget_password');
 Route::post('/update-password', [UserController::class, 'update_password'])->name('user.update_password');

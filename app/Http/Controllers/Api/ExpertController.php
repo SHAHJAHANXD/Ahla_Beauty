@@ -84,15 +84,15 @@ class ExpertController extends Controller
             }
             $password = Str::random(10);
             $code = mt_rand(000000, 999999);
-            $data = ['email' => $request->email, 'password' => $password, 'name' => $request->name, 'code' => $code];
-            $mail = Mail::send(
-                'emails.password',
-                $data,
-                function ($message) use ($data) {
-                    $message->to($data['email'])->subject('Your account details');
-                }
-            );
-            if ($mail == true) {
+            // $data = ['email' => $request->email, 'password' => $password, 'name' => $request->name, 'code' => $code];
+            // $mail = Mail::send(
+            //     'emails.password',
+            //     $data,
+            //     function ($message) use ($data) {
+            //         $message->to($data['email'])->subject('Your account details');
+            //     }
+            // );
+            if ($code == $code) {
                 $user = new User();
                 $user->name = $request->name;
                 $user->email = $request->email;
