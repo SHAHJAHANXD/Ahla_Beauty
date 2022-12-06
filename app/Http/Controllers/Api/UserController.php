@@ -21,10 +21,12 @@ use Locale;
 
 class UserController extends Controller
 {
-    public function GetAll()
+    public function GetAll($id)
     {
-        $id = Auth::user()->id;
-        $data['offers'] = Offers::where('user_id', $id)->get();
+        $offer = Offers::where('user_id', $id)->with('Category')->get();
+        foreach ($offer as $offers) {
+            $data['offers'] = $offers;
+        }
         $sss = Package::where('user_id', $id)->with('Optional')->with('Required')->with('Images')->get();
         foreach ($sss as $Optional) {
             $data['packages'] = $sss;
@@ -246,7 +248,8 @@ class UserController extends Controller
     public function get_saloon_service_type($type)
     {
         try {
-            $salon = User::where('role', 'Salon')->where('service_type', $type)->first();
+            $salon = User::where('role', 'Salon')->where('service_type', $type)->where('email_status', 1)->where('account_status', 1)->get();
+            $salon['rating'] = '5';
             if ($salon == true) {
                 $response = ['status' => true, 'data' => [$salon], 'message' => "Record fetched successfully!"];
                 return response($response, 200);
@@ -262,9 +265,9 @@ class UserController extends Controller
     public function get_frequ_saloon()
     {
         try {
-            $salon = User::where('role', 'Salon')->first();
+            $salon = User::where('role', 'Salon')->where('email_status', 1)->where('account_status', 1)->get();
             if ($salon == true) {
-                $response = ['status' => true, 'data' => [$salon], 'message' => "Record fetched successfully!"];
+                $response = ['status' => true, 'data' => $salon, 'message' => "Record fetched successfully!"];
                 return response($response, 200);
             } else {
                 $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
@@ -279,13 +282,22 @@ class UserController extends Controller
     {
         try {
             $salon = User::where('role', 'Salon')->where('id', $id)->first();
-            if ($salon == true) {
-                $response = ['status' => true, 'data' => $salon, 'message' => "Record fetched successfully!"];
-                return response($response, 200);
-            } else {
-                $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
-                return response($response, 400);
+            $data['salon'] = $salon;
+            // dd($salon->id);
+            $offer = Offers::where('user_id', $salon->id)->with('Category')->get();
+            foreach ($offer as $offers) {
+                $data['offers'] = $offers;
             }
+            $Package = Package::where('user_id', $salon->id)->with('Optional')->with('Required')->with('Images')->get();
+            foreach ($Package as $Packages) {
+                $data['packages'] = $Packages;
+            }
+            $Service = Services::where('user_id', $salon->id)->with('Optional')->with('Required')->with('Images')->get();
+            foreach ($Service as $Services) {
+                $data['services'] = $Services;
+            }
+            $response = ['status' => true, 'data' => $data, 'message' => "Record fetched successfully!"];
+            return response($response, 200);
         } catch (Exception $e) {
             $response = ['status' => false, 'data' => null, 'message' => $e->getMessage()];
             return response($response, 400);

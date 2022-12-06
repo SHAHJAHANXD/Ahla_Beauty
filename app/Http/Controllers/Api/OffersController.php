@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\OfferCategories;
 use App\Models\Offers;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -67,13 +68,21 @@ class OffersController extends Controller
     }
     public function get()
     {
-        $id = Auth::user()->id;
-        $offer = Offers::where('user_id', $id)->get();
-        if ($offer == true) {
-            $response = ['status' => true, 'data' => $offer, 'message' => "Record Fetched Successfully!"];
-            return response($response, 200);
-        } else {
-            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+        try {
+            $id = Auth::user()->id;
+            $offer = Offers::where('user_id', $id)->with('Category')->get();
+            foreach ($offer as $offers) {
+                $data = $offers;
+            }
+            if ($offer == true) {
+                $response = ['status' => true, 'data' => $data, 'message' => "Record Fetched Successfully!"];
+                return response($response, 200);
+            } else {
+                $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+                return response($response, 400);
+            }
+        } catch (Exception $e) {
+            $response = ['status' => false, 'message' => $e->getMessage()];
             return response($response, 400);
         }
     }

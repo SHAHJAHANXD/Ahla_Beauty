@@ -60,7 +60,7 @@ Route::prefix('salon')->group(function () {
     Route::post('/register', [SalonController::class, 'register'])->name('salon.register');
     Route::post('/login', [SalonController::class, 'authenticate'])->name('salon.login');
 
-    Route::get('/get-all-data', [UserController::class, 'GetAll'])->name('GetAll')->middleware('auth:api');
+    Route::get('/get-all-data/{id}', [UserController::class, 'GetAll'])->name('GetAll')->middleware('auth:api');
 
     Route::prefix('offers')->group(function () {
         Route::post('/create', [OffersController::class, 'create'])->name('offers.create')->middleware('auth:api');
