@@ -55,11 +55,11 @@ class AuthenticateController extends Controller
             return redirect()->back()->with('error', 'Email address not found!');
         }
         $code = mt_rand(000000, 999999);
-        // $mail = Mail::send('emails.forgetEmail', ['code' => $code], function ($message) use ($request) {
-        //     $message->to($request->email);
-        //     $message->subject('Forget Password');
-        // });
-        if ($code == $code) {
+        $mail = Mail::send('emails.forgetEmail', ['code' => $code], function ($message) use ($request) {
+            $message->to($request->email);
+            $message->subject('Forget Password');
+        });
+        if ($mail == true) {
             $user = User::where('email', $email)->first();
             $user->password_code = $code;
             $user->save();
@@ -128,11 +128,11 @@ class AuthenticateController extends Controller
             ]
         );
         $code = mt_rand(000000, 999999);
-        // $mail = Mail::send('emails.verifyemail', ['code' => $code], function ($message) use ($request) {
-        //     $message->to($request->email);
-        //     $message->subject('Verify Email');
-        // });
-        if ($code == $code) {
+        $mail = Mail::send('emails.verifyemail', ['code' => $code], function ($message) use ($request) {
+            $message->to($request->email);
+            $message->subject('Verify Email');
+        });
+        if ($mail == true) {
             $user = new User();
             $user->name = $request->name;
             $user->email = $request->email;

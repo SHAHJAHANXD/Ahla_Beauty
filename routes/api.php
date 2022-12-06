@@ -43,6 +43,7 @@ Route::prefix('user')->group(function () {
     Route::post('/login', [UserController::class, 'authenticate'])->name('user.login');
     Route::get('/get-saloon/{id}', [UserController::class, 'get_saloon'])->name('user.get_saloon')->middleware('auth:api');
     Route::get('/get-freques-salons', [UserController::class, 'get_frequ_saloon'])->name('user.get_frequ_saloon')->middleware('auth:api');
+    Route::get('/get-salon-by-service-type/{type}', [UserController::class, 'get_saloon_service_type'])->name('user.get_saloon_service_type')->middleware('auth:api');
 });
 
 Route::post('/save-location', [UserController::class, 'Location'])->name('user.Location')->middleware('auth:api');
@@ -58,6 +59,8 @@ Route::prefix('salon')->group(function () {
     Route::post('/get-staff/{salon_id}', [SalonController::class, 'getStaff'])->name('salon.getStaff')->middleware('auth:api');
     Route::post('/register', [SalonController::class, 'register'])->name('salon.register');
     Route::post('/login', [SalonController::class, 'authenticate'])->name('salon.login');
+
+    Route::get('/get-all-data', [UserController::class, 'GetAll'])->name('GetAll')->middleware('auth:api');
 
     Route::prefix('offers')->group(function () {
         Route::post('/create', [OffersController::class, 'create'])->name('offers.create')->middleware('auth:api');

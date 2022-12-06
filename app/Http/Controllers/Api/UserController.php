@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Countries;
 use App\Models\Location;
+use App\Models\Offers;
+use App\Models\Package;
+use App\Models\Services;
 use App\Models\User;
 use Exception;
 use Illuminate\Auth\Events\Verified;
@@ -18,6 +21,26 @@ use Locale;
 
 class UserController extends Controller
 {
+    public function GetAll()
+    {
+        $id = Auth::user()->id;
+        $data['offers'] = Offers::where('user_id', $id)->get();
+        $sss = Package::where('user_id', $id)->with('Optional')->with('Required')->with('Images')->get();
+        foreach ($sss as $Optional) {
+            $data['packages'] = $sss;
+        }
+        $Services = Services::where('user_id', $id)->with('Optional')->with('Required')->with('Images')->get();
+        foreach ($Services as $Optional) {
+            $data['services'] = $Services;
+        }
+        if ($data == true) {
+            $response = ['status' => true, 'data' => $data, 'message' => "Record Fetched Successfully!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
     public function UpdateProfile(Request $request)
     {
 
@@ -51,11 +74,11 @@ class UserController extends Controller
                 $response = ['status' => false, 'data' => null, 'message' => "User id is not valid. Thank you!"];
                 return response($response, 400);
             } elseif ($User->role == 'Expert') {
-                $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'location', 'created_at', 'updated_at']);
+                $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'created_at', 'updated_at']);
                 $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
                 return response($response, 200);
             } elseif ($User->role == 'Salon') {
-                $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'location', 'created_at', 'updated_at']);
+                $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'created_at', 'updated_at']);
                 $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
                 return response($response, 200);
             } elseif ($User->role == 'User') {
@@ -152,30 +175,29 @@ class UserController extends Controller
             //     $message->to($request->email);
             //     $message->subject('Verify Email');
             // });
-            if ($code == $code) {
-                $user = new User();
-                $user->name = $request->name;
-                $user->email = $request->email;
-                $user->phone = $request->phone;
-                $user->role = 'User';
-                $user->email_status = '1';
-                $user->password = Hash::make($request->password);
-                $user->code = $code;
-                $user->latitude = $request->latitude;
-                $user->longitude = $request->longitude;
+            // if ($mail == true) {
+            $user = new User();
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->role = 'User';
+            $user->password = Hash::make($request->password);
+            $user->code = $code;
+            $user->latitude = $request->latitude;
+            $user->longitude = $request->longitude;
 
-                $user->save();
-                $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'code', 'email_status', 'account_status', 'profile_image', 'role', 'created_at', 'updated_at']);
-                // $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
+            $user->save();
+            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'code', 'email_status', 'account_status', 'profile_image', 'role', 'created_at', 'updated_at']);
+            // $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
 
-                if ($user == true) {
-                    $response = ['status' => true, 'data' => $data, 'message' => "Account created successfully. Please check your email to verify your account. Thank you!"];
-                    return response($response, 200);
-                }
-            } else {
-                $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
-                return response($response, 400);
+            if ($user == true) {
+                $response = ['status' => true, 'data' => $data, 'message' => "Account created successfully. Please check your email to verify your account. Thank you!"];
+                return response($response, 200);
             }
+            // } else {
+            //     $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            //     return response($response, 400);
+            // }
         } catch (Exception $e) {
             $response = ['status' => false, 'data' => null, 'message' => $e->getMessage()];
             return response($response, 400);
@@ -221,6 +243,22 @@ class UserController extends Controller
         }
     }
 
+    public function get_saloon_service_type($type)
+    {
+        try {
+            $salon = User::where('role', 'Salon')->where('service_type', $type)->first();
+            if ($salon == true) {
+                $response = ['status' => true, 'data' => [$salon], 'message' => "Record fetched successfully!"];
+                return response($response, 200);
+            } else {
+                $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+                return response($response, 400);
+            }
+        } catch (Exception $e) {
+            $response = ['status' => false, 'data' => null, 'message' => $e->getMessage()];
+            return response($response, 400);
+        }
+    }
     public function get_frequ_saloon()
     {
         try {
@@ -272,7 +310,7 @@ class UserController extends Controller
                 $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'email_status', 'role', 'created_at', 'updated_at']);
 
                 // $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
-                $email_status = User::where('email', $request->email)->first(['id', 'email_status']);
+                $email_status = User::where('email', $request->email)->first(['id', 'email_status', 'code']);
                 if ($data->email_status == 0) {
                     $response = ['status' => false, 'data' => $email_status, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
                     return response($response, 400);
@@ -293,6 +331,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'email' => 'required',
                 'code' => 'required|max:6',
+                'password' => 'required',
             ]);
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'errors' => $validator->errors()]);
@@ -308,22 +347,28 @@ class UserController extends Controller
                     return response($response, 400);
                 } else {
                     if ($code->code == $request->code) {
-                        $user_update = User::where('email', $request->email)->first();
-                        $user_update->email_status = '1';
-                        $user_update->code = 'Verified';
-                        $user_update->save();
-                        if ($code->role == "User") {
-                            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'email_status', 'role', 'created_at', 'updated_at']);
+                        $credentials = $request->only('email', 'password');
+                        if (!auth()->attempt($credentials)) {
+                            $response = ['status' => false, 'message' => "Email or password is invalid. Thank you!"];
+                            return response($response, 400);
+                        } else {
+                            $user_update = User::where('email', $request->email)->first();
+                            if ($code->role == "User") {
+                                $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'email_status', 'role', 'created_at', 'updated_at']);
+                            }
+                            if ($code->role == "Salon") {
+                                $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
+                            }
+                            if ($code->role == "Staff") {
+                                $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
+                            }
+                            $data['token'] =  Auth::user()->createToken('API Token')->accessToken;
+                            $user_update->email_status = '1';
+                            $user_update->code = 'Verified';
+                            $user_update->save();
+                            $response = ['status' => true, 'data' => $data, 'message' => "Account verified successfully!"];
+                            return response($response, 200);
                         }
-                        if ($code->role == "Salon") {
-                            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
-                        }
-                        if ($code->role == "Staff") {
-                            $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
-                        }
-
-                        $response = ['status' => true, 'data' => $data, 'message' => "Account verified successfully!"];
-                        return response($response, 200);
                     } else {
                         $response = ['status' => false, 'data' => null, 'message' => "Code is Invalid!"];
                         return response($response, 400);
@@ -353,18 +398,18 @@ class UserController extends Controller
                 //     $message->to($request->email);
                 //     $message->subject('Verify Email');
                 // });
-                if ($code == $code) {
-                    $user = User::where('email', $request->email)->first();
-                    $user->code = $code;
-                    $user->save();
-                    if ($user == true) {
-                        $response = ['status' => true, 'code' => $code, 'message' => "Code sent successfully. Please check your email to verify your account. Thank you!"];
-                        return response($response, 200);
-                    }
-                } else {
-                    $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
-                    return response($response, 400);
+                // if ($mail == true) {
+                $user = User::where('email', $request->email)->first();
+                $user->code = $code;
+                $user->save();
+                if ($user == true) {
+                    $response = ['status' => true, 'data' => $code, 'message' => "Code sent successfully. Please check your email to verify your account. Thank you!"];
+                    return response($response, 200);
                 }
+                // } else {
+                //     $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+                //     return response($response, 400);
+                // }
             }
         } catch (Exception $e) {
             $response = ['status' => false, 'data' => null, 'message' => $e->getMessage()];
@@ -392,18 +437,18 @@ class UserController extends Controller
             //     $message->to($request->email);
             //     $message->subject('Forget Password');
             // });
-            if ($code == $code) {
-                $user = User::where('email', $email)->first();
-                $user->password_code = $code;
-                $user->save();
-                if ($user == true) {
-                    $response = ['status' => true, 'code' => $code, 'message' => "An email with a reset code sent successfully!"];
-                    return response($response, 200);
-                }
-            } else {
-                $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
-                return response($response, 400);
+            // if ($mail == true) {
+            $user = User::where('email', $email)->first();
+            $user->password_code = $code;
+            $user->save();
+            if ($user == true) {
+                $response = ['status' => true, 'data' => $code, 'message' => "An email with a reset code sent successfully!"];
+                return response($response, 200);
             }
+            // } else {
+            //     $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            //     return response($response, 400);
+            // }
         } catch (Exception $e) {
             $response = ['status' => false, 'data' => null, 'message' => $e->getMessage()];
             return response($response, 400);

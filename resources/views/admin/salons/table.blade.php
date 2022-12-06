@@ -63,7 +63,6 @@
                                             <th class="text-center">Friday</th>
                                             <th class="text-center">Saturday</th>
                                             <th class="text-center">Sunday</th>
-                                            <th class="text-center">Shift</th>
                                             <th class="text-center">Email Status</th>
                                             <th class="text-center">Account Status</th>
                                         </tr>
@@ -106,7 +105,6 @@
                                                 <td class="text-center">{{ $users->friday }}</td>
                                                 <td class="text-center">{{ $users->saturday }}</td>
                                                 <td class="text-center">{{ $users->sunday }}</td>
-                                                <td class="text-center">{{ $users->shift }}</td>
                                                 @if ($users->email_status == 1)
                                                     <td class="text-center">
                                                         <span class="badge badge-success">Verified</span>

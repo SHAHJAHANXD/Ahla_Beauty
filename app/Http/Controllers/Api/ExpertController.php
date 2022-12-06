@@ -84,7 +84,7 @@ class ExpertController extends Controller
             }
             $password = Str::random(10);
             $code = mt_rand(000000, 999999);
-            // $data = ['email' => $request->email, 'password' => $password, 'name' => $request->name, 'code' => $code];
+            $data = ['email' => $request->email, 'password' => $password, 'name' => $request->name, 'code' => $code];
             // $mail = Mail::send(
             //     'emails.password',
             //     $data,
@@ -92,7 +92,7 @@ class ExpertController extends Controller
             //         $message->to($data['email'])->subject('Your account details');
             //     }
             // );
-            if ($code == $code) {
+            // if ($mail == true) {
                 $user = new User();
                 $user->name = $request->name;
                 $user->email = $request->email;
@@ -116,10 +116,10 @@ class ExpertController extends Controller
                     $response = ['status' => true, 'data' => null, 'message' => "Account created successfully. Please check your email to verify your account. Thank you!"];
                     return response($response, 200);
                 }
-            } else {
-                $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
-                return response($response, 400);
-            }
+            // } else {
+            //     $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            //     return response($response, 400);
+            // }
         } catch (Exception $e) {
             $response = ['status' => false, 'message' => $e->getMessage()];
             return response($response, 400);
@@ -143,7 +143,7 @@ class ExpertController extends Controller
             } else {
                 $data = User::where('email', $request->email)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'latitude', 'longitude', 'created_at', 'updated_at']);
                 $data['profile_image'] =  env('APP_URL') . 'images/users/' . $data->profile_image;
-                $email_status = User::where('email', $request->email)->first(['id', 'email_status']);
+                $email_status = User::where('email', $request->email)->first(['id', 'email_status' , 'code']);
                 if ($data->email_status == 0) {
                     $response = ['status' => false, 'data' => $email_status, 'message' => "Your account is not verified. Please verify your account. Thank you!"];
                     return response($response, 400);

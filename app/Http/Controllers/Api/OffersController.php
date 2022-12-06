@@ -38,7 +38,15 @@ class OffersController extends Controller
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
         }
         $id = Auth::user()->id;
-        $offer = Offers::create($request->all() + ['user_id' => $id]);
+        $offer = new Offers();
+        $offer->user_id = Auth::user()->id;
+        $offer->image = $request->image;
+        $offer->title = $request->title;
+        $offer->discount = $request->discount;
+        $offer->description = $request->description;
+        $offer->publish_date = $request->publish_date;
+        $offer->expiry_date = $request->expiry_date;
+        $offer->save();
 
         if ($request->category == true) {
             foreach ($request->category as $categorys) {
@@ -48,7 +56,7 @@ class OffersController extends Controller
                 $time->save();
             }
         }
-        
+
         if ($offer == true) {
             $response = ['status' => true, 'data' => null, 'message' => "Record Stored Successfully!"];
             return response($response, 200);
