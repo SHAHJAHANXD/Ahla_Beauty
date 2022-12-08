@@ -71,15 +71,21 @@ class OffersController extends Controller
         try {
             $id = Auth::user()->id;
             $offer = Offers::where('user_id', $id)->with('Category')->get();
-            foreach ($offer as $offers) {
-                $data = $offers;
+            if ($offer->count() == 0) {
+                $response = ['status' => true, 'data' => [], 'message' => "Record Fetched Successfully!"];
+                return response($response, 200);
             }
-            if ($offer == true) {
-                $response = ['status' => true, 'data' => $data, 'message' => "Record Fetched Successfully!"];
+            if ($offer->count() == 1) {
+                $response = ['status' => true, 'data' => $offer, 'message' => "Record Fetched Successfully!"];
                 return response($response, 200);
             } else {
-                $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
-                return response($response, 400);
+                if ($offer->count() > 1) {
+                    $response = ['status' => true, 'data' => $offer, 'message' => "Record Fetched Successfully!"];
+                    return response($response, 200);
+                } else {
+                    $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+                    return response($response, 400);
+                }
             }
         } catch (Exception $e) {
             $response = ['status' => false, 'message' => $e->getMessage()];
@@ -94,9 +100,9 @@ class OffersController extends Controller
             return response($response, 200);
         }
         $id = Auth::user()->id;
-        $offer = Offers::where('id', $request->id)->update($request->all() + ['user_id' => $id]);
+        $offer = Offers::where('id', $request->id)->update($request->all());
         if ($offer == true) {
-            $response = ['status' => true, 'data' => null, 'message' => "Record Edited Successfully!"];
+            $response = ['status' => true, 'data' => $request->all(), 'message' => "Record Edited Successfully!"];
             return response($response, 200);
         } else {
             $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];

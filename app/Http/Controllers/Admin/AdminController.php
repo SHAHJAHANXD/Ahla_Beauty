@@ -4,17 +4,48 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
 {
+    public function activeaccount($id)
+    {
+        try {
+            $user = User::where('id', $id)->first();
+            $user->account_status =  1;
+            $user->save();
+            if ($user == true) {
+                return redirect()->back()->with('success', 'Record Updated Successfully!');
+            } else {
+                return redirect()->back()->with('error', 'Something went wrong. Try again later!');
+            }
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+    public function blockaccount($id)
+    {
+        try {
+            $user = User::where('id', $id)->first();
+            $user->account_status =  0;
+            $user->save();
+            if ($user == true) {
+                return redirect()->back()->with('success', 'Record Updated Successfully!');
+            } else {
+                return redirect()->back()->with('error', 'Something went wrong. Try again later!');
+            }
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
     public function dashboard()
     {
         $users = User::where('role', 'User')->take(8)->get();
         $Shop = User::where('role', 'Salon')->take(8)->get();
-        return view('admin.dashboard.index', compact('users','Shop'));
+        return view('admin.dashboard.index', compact('users', 'Shop'));
     }
     public function login()
     {
@@ -22,17 +53,17 @@ class AdminController extends Controller
     }
     public function allSalons()
     {
-        $salon = User::where('role','Salon')->get();
+        $salon = User::where('role', 'Salon')->get();
         return view('admin.salons.table', compact('salon'));
     }
     public function allUsers()
     {
-        $users = User::where('role','User')->get();
+        $users = User::where('role', 'User')->get();
         return view('admin.users.table', compact('users'));
     }
     public function allStaff()
     {
-        $users = User::where('role','Staff')->get();
+        $users = User::where('role', 'Staff')->get();
         return view('admin.Staff.table', compact('users'));
     }
     public function authenticate(Request $request)

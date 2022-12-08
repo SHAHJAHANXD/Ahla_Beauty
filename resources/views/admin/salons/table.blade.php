@@ -65,6 +65,7 @@
                                             <th class="text-center">Sunday</th>
                                             <th class="text-center">Email Status</th>
                                             <th class="text-center">Account Status</th>
+                                            <th class="text-center">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -121,6 +122,16 @@
                                                 @else
                                                     <td class="text-center">
                                                         <span class="badge badge-danger">Blocked</span>
+                                                    </td>
+                                                @endif
+
+                                                @if ($users->account_status == 0)
+                                                    <td class="text-center">
+                                                        <a href="/administrator/active-account/{{ $users->id }}"><span class="btn btn-success">Active</span></a>
+                                                    </td>
+                                                @else
+                                                    <td class="text-center">
+                                                        <a href="/administrator/block-account/{{ $users->id }}"><span class="btn btn-danger">Blocked</span></a>
                                                     </td>
                                                 @endif
 

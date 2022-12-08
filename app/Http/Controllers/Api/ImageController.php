@@ -19,19 +19,19 @@ class ImageController extends Controller
         }
         if ($request->has('file')) {
             $image = $request->file('file');
+            $rand = rand(000000000000000 , 999999999999999);
             foreach ($image as $index => $files) {
-                $file_name =  time() . $index . "." . $files->getClientOriginalExtension();
+                $file_name =  $rand . $index . "." . $files->getClientOriginalExtension();
                 $files->move('storage/images/', $file_name);
                 $imagepath = url('/') . '/' . 'storage/images/' . $file_name;
                 $user = new Images();
                 $user->image_path = $imagepath;
+                $user->rand = $rand;
                 $user->save();
             }
-            $data = [
-                'url' => $imagepath,
-            ];
+            $image = Images::where('rand', $rand)->get();
             if ($user == true) {
-                $response = ['status' => true, 'data' => $data, 'message' => "Image is uploaded successfully!"];
+                $response = ['status' => true, 'data' => $image, 'message' => "Image is uploaded successfully!"];
                 return response($response, 200);
             } else {
                 $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];

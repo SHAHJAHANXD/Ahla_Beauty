@@ -7,6 +7,7 @@ use App\Models\Optional;
 use App\Models\OtherImages;
 use App\Models\Required;
 use App\Models\Services;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -73,17 +74,27 @@ class ServicesController extends Controller
     }
     public function get()
     {
-        $id = Auth::user()->id;
-        // $Services = Services::where('user_id', $id)->get();
-        $Services = Services::where('user_id', $id)->with('Optional')->with('Required')->with('Images')->get();
-        foreach ($Services as $Optional) {
-            $data = $Services;
-        }
-        if ($Services == true) {
-            $response = ['status' => true, 'data' => $data, 'message' => "Record Fetched Successfully!"];
-            return response($response, 200);
-        } else {
-            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+        try {
+            $id = Auth::user()->id;
+            $Services = Services::where('user_id', $id)->with('Optional')->with('Required')->with('Images')->get();
+            if ($Services->count() == 0) {
+                $response = ['status' => true, 'data' => [], 'message' => "Record Fetched Successfully!"];
+                return response($response, 200);
+            }
+            if ($Services->count() == 1) {
+                $response = ['status' => true, 'data' => $Services, 'message' => "Record Fetched Successfully!"];
+                return response($response, 200);
+            } else {
+                if ($Services->count() > 1) {
+                    $response = ['status' => true, 'data' => $Services, 'message' => "Record Fetched Successfully!"];
+                    return response($response, 200);
+                } else {
+                    $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+                    return response($response, 400);
+                }
+            }
+        } catch (Exception $e) {
+            $response = ['status' => false, 'message' => $e->getMessage()];
             return response($response, 400);
         }
     }
@@ -95,9 +106,9 @@ class ServicesController extends Controller
             return response($response, 200);
         }
         $id = Auth::user()->id;
-        $Services = Services::where('id', $request->id)->update($request->all() + ['user_id' => $id]);
+        $Services = Services::where('id', $request->id)->update($request->all());
         if ($Services == true) {
-            $response = ['status' => true, 'data' => null, 'message' => "Record Edited Successfully!"];
+            $response = ['status' => true, 'data' => $request->all(), 'message' => "Record Edited Successfully!"];
             return response($response, 200);
         } else {
             $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];

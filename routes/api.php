@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ServicesController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,18 +25,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/response', [UserController::class, 'response'])->name('user.response')->middleware('auth:api');
-
 Route::get('/profile', [UserController::class, 'userProfile'])->name('user.userProfile')->middleware('auth:api');
 Route::post('/update-profile', [UserController::class, 'UpdateProfile'])->name('user.UpdateProfile')->middleware('auth:api');
-
 Route::post('/forget-password', [UserController::class, 'forget_password'])->name('user.forget_password');
 Route::post('/update-password', [UserController::class, 'update_password'])->name('user.update_password');
-
 Route::post('/verify-code', [UserController::class, 'verify_code'])->name('user.verifyCode');
 Route::post('/resend-code', [UserController::class, 'resend_code'])->name('user.resend_code');
-
 Route::get('/get-all-categories', [UserController::class, 'categories'])->name('user.categories');
-
 Route::get('/get-all-countries', [UserController::class, 'Api_countries'])->name('user.Api_countries');
 
 Route::prefix('user')->group(function () {
@@ -44,8 +40,14 @@ Route::prefix('user')->group(function () {
     Route::get('/get-saloon/{id}', [UserController::class, 'get_saloon'])->name('user.get_saloon')->middleware('auth:api');
     Route::get('/get-freques-salons', [UserController::class, 'get_frequ_saloon'])->name('user.get_frequ_saloon')->middleware('auth:api');
     Route::get('/get-salon-by-service-type/{type}', [UserController::class, 'get_saloon_service_type'])->name('user.get_saloon_service_type')->middleware('auth:api');
+    Route::get('/fav-salon/{salon_id}', [UserController::class, 'fav_salon'])->name('user.fav_salon')->middleware('auth:api');
+    Route::get('/get-fav-un-fav-salon-by-user', [UserController::class, 'userFavunfav'])->name('user.userFavunfav')->middleware('auth:api');
 });
-
+Route::prefix('order')->group(function () {
+    Route::post('/create-order', [OrderController::class, 'create'])->name('offers.create')->middleware('auth:api');
+    Route::get('/by-user', [OrderController::class, 'getByUser'])->name('offers.get')->middleware('auth:api');
+    Route::get('/by-salon', [OrderController::class, 'getBySalon'])->name('offers.get')->middleware('auth:api');
+});
 Route::post('/save-location', [UserController::class, 'Location'])->name('user.Location')->middleware('auth:api');
 Route::get('/get-user-location', [UserController::class, 'UserLocation'])->name('user.UserLocation')->middleware('auth:api');
 Route::get('/delete-user-location/{id}', [UserController::class, 'DeleteLocation'])->name('user.DeleteLocation')->middleware('auth:api');
@@ -59,7 +61,8 @@ Route::prefix('salon')->group(function () {
     Route::post('/get-staff/{salon_id}', [SalonController::class, 'getStaff'])->name('salon.getStaff')->middleware('auth:api');
     Route::post('/register', [SalonController::class, 'register'])->name('salon.register');
     Route::post('/login', [SalonController::class, 'authenticate'])->name('salon.login');
-
+    Route::post('/available-times', [SalonController::class, 'available'])->name('salon.available')->middleware('auth:api');
+    Route::get('/get-available-times/{id}', [SalonController::class, 'getavailable'])->name('salon.getavailable')->middleware('auth:api');
     Route::get('/get-all-data/{id}', [UserController::class, 'GetAll'])->name('GetAll')->middleware('auth:api');
 
     Route::prefix('offers')->group(function () {
@@ -70,7 +73,6 @@ Route::prefix('salon')->group(function () {
         Route::post('/active-status', [OffersController::class, 'Active'])->name('offers.Active')->middleware('auth:api');
         Route::post('/block-status', [OffersController::class, 'Block'])->name('offers.Black')->middleware('auth:api');
     });
-
     Route::prefix('packages')->group(function () {
         Route::post('/create', [PackagesController::class, 'create'])->name('packages.create')->middleware('auth:api');
         Route::get('/by-user', [PackagesController::class, 'get'])->name('packages.get')->middleware('auth:api');
@@ -79,7 +81,6 @@ Route::prefix('salon')->group(function () {
         Route::post('/active-status', [PackagesController::class, 'Active'])->name('packages.Active')->middleware('auth:api');
         Route::post('/block-status', [PackagesController::class, 'Block'])->name('packages.Black')->middleware('auth:api');
     });
-
     Route::prefix('services')->group(function () {
         Route::post('/create', [ServicesController::class, 'create'])->name('services.create')->middleware('auth:api');
         Route::get('/by-user', [ServicesController::class, 'get'])->name('services.get')->middleware('auth:api');
@@ -88,11 +89,9 @@ Route::prefix('salon')->group(function () {
         Route::post('/active-status', [ServicesController::class, 'Active'])->name('services.Active')->middleware('auth:api');
         Route::post('/block-status', [ServicesController::class, 'Block'])->name('services.Black')->middleware('auth:api');
     });
-
 });
 
 Route::post('/upload-image', [ImageController::class, 'uploadImage'])->name('user.uploadImage');
-// Route::get('/uploaded-images', [ImageController::class, 'getUploadedImage'])->name('user.getUploadedImage');
 
 Route::prefix('staff')->group(function () {
     Route::post('/register', [ExpertController::class, 'register'])->name('staff.register');

@@ -5,22 +5,76 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Countries;
+use App\Models\FavUnFav;
 use App\Models\Location;
 use App\Models\Offers;
 use App\Models\Package;
 use App\Models\Services;
+use App\Models\Shifts;
 use App\Models\User;
 use Exception;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Locale;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
+    public function fav_salon($salon_id)
+    {
+        try {
+            $fav = FavUnFav::where('user_id', Auth::user()->id)->where('salon_id', $salon_id)->count();
+            if ($fav == 1) {
+                $update = FavUnFav::where('user_id', Auth::user()->id)->where('salon_id', $salon_id)->first();
+                if ($update->is_fav == 1) {
+                    $data = FavUnFav::where('id', $update->id)->first();
+                    $data->user_id = Auth::user()->id;
+                    $data->salon_id = $salon_id;
+                    $data->is_fav = 0;
+                    $data->save();
+                } elseif ($update->is_fav == 0) {
+                    $data = FavUnFav::where('id', $update->id)->first();
+                    $data->user_id = Auth::user()->id;
+                    $data->salon_id = $salon_id;
+                    $data->is_fav = 1;
+                    $data->save();
+                }
+            } else {
+                $data = new FavUnFav();
+                $data->user_id = Auth::user()->id;
+                $data->salon_id = $salon_id;
+                $data->is_fav = 1;
+                $data->save();
+            }
+
+            if ($data == true) {
+                $response = ['status' => true, 'data' => $data, 'message' => "Record Updated Successfully!"];
+                return response($response, 200);
+            } else {
+                $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+                return response($response, 400);
+            }
+        } catch (Exception $e) {
+            $response = ['status' => true, 'data' => null, 'message' => $e->getMessage()];
+            return response($response, 200);
+        }
+    }
+    public function userFavunfav()
+    {
+        $data = FavUnFav::where('user_id', Auth::user()->id)->get();
+        if ($data == true) {
+            $response = ['status' => true, 'data' => $data, 'message' => "Record fetched Successfully!"];
+            return response($response, 200);
+        } else {
+            $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];
+            return response($response, 400);
+        }
+    }
     public function GetAll($id)
     {
         $offer = Offers::where('user_id', $id)->with('Category')->get();
@@ -45,15 +99,36 @@ class UserController extends Controller
     }
     public function UpdateProfile(Request $request)
     {
-
         try {
+            $id = Auth::user()->id;
             $found = User::where('email', $request->email)->count();
             if ($found == 1) {
                 $response = ['status' => true, 'data' => null, 'message' => "Email already taken. Thank you!"];
                 return response($response, 200);
             } else {
-                $user = User::where('id', Auth::user()->id)->update($request->all());
+                $user = User::where('id', $id)->update($request->all());
                 if ($user == true) {
+                    $data = User::where('id', Auth::user()->id)->first();
+                    if ($data->role == 'Expert') {
+                        $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'created_at', 'updated_at']);
+                        $admin['locations'] = Location::where('user_id', $admin->id)->get();
+                        $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
+                        return response($response, 200);
+                    } elseif ($data->role == 'Salon') {
+                        $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'created_at', 'updated_at']);
+                        $admin['shift'] = Shifts::where('user_id', $data->id)->get();
+                        $admin['locations'] = Location::where('user_id', $admin->id)->get();
+                        $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
+                        return response($response, 200);
+                    } elseif ($data->role == 'User') {
+                        $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'code', 'email_status', 'profile_image', 'role', 'created_at', 'updated_at']);
+                        $admin['locations'] = Location::where('user_id', $admin->id)->get();
+                        $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
+                        return response($response, 200);
+                    } else {
+                        $response = ['status' => false, 'data' => null, 'message' => "User Role is not valid. Thank you!"];
+                        return response($response, 400);
+                    }
                     $response = ['status' => true, 'data' => $request->all(), 'message' => "Record Saved Successfully. Thank you!"];
                     return response($response, 200);
                 } else {
@@ -77,14 +152,18 @@ class UserController extends Controller
                 return response($response, 400);
             } elseif ($User->role == 'Expert') {
                 $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'created_at', 'updated_at']);
+                $admin['locations'] = Location::where('user_id', $admin->id)->get();
                 $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
                 return response($response, 200);
             } elseif ($User->role == 'Salon') {
                 $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'profile_image', 'code', 'role', 'account_status', 'email_status', 'salon_name_en', 'salon_name_ar', 'commercial_registration_number', 'certificate', 'category', 'iban', 'country', 'city', 'average_orders', 'service_type', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'shift', 'created_at', 'updated_at']);
+                $admin['locations'] = Location::where('user_id', $admin->id)->get();
+                $admin['shift'] = Shifts::where('user_id', $admin->id)->get();
                 $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
                 return response($response, 200);
             } elseif ($User->role == 'User') {
                 $admin = User::where('id', $id)->first(['id', 'name', 'email', 'phone', 'code', 'email_status', 'profile_image', 'role', 'created_at', 'updated_at']);
+                $admin['locations'] = Location::where('user_id', $admin->id)->get();
                 $response = ['status' => true, 'data' => $admin, 'message' => "User data fetched successfully. Thank you!"];
                 return response($response, 200);
             } else {
@@ -248,10 +327,19 @@ class UserController extends Controller
     public function get_saloon_service_type($type)
     {
         try {
-            $salon = User::where('role', 'Salon')->where('service_type', $type)->where('email_status', 1)->where('account_status', 1)->get();
-            $salon['rating'] = '5';
+            $salon = User::where('role', 'Salon')->where('service_type', $type)->where('email_status', 1)->where('account_status', 1)->with('location')->get();
+
+
+            foreach ($salon as $salons) {
+                $response = [
+                    'salon' => $salons,
+                    'rating' => "5"
+                ];
+            }
+
+
             if ($salon == true) {
-                $response = ['status' => true, 'data' => [$salon], 'message' => "Record fetched successfully!"];
+                $response = ['status' => true, 'data' => $response, 'message' => "Record fetched successfully!"];
                 return response($response, 200);
             } else {
                 $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
@@ -283,19 +371,15 @@ class UserController extends Controller
         try {
             $salon = User::where('role', 'Salon')->where('id', $id)->first();
             $data['salon'] = $salon;
-            // dd($salon->id);
+            $discount = Offers::where('user_id', $salon->id)->max('discount');
+            $data['discount'] = $discount;
             $offer = Offers::where('user_id', $salon->id)->with('Category')->get();
-            foreach ($offer as $offers) {
-                $data['offers'] = $offers;
-            }
+            $data['offer'] = $offer;
             $Package = Package::where('user_id', $salon->id)->with('Optional')->with('Required')->with('Images')->get();
-            foreach ($Package as $Packages) {
-                $data['packages'] = $Packages;
-            }
+            $data['Package'] = $Package;
             $Service = Services::where('user_id', $salon->id)->with('Optional')->with('Required')->with('Images')->get();
-            foreach ($Service as $Services) {
-                $data['services'] = $Services;
-            }
+            $data['Service'] = $Service;
+
             $response = ['status' => true, 'data' => $data, 'message' => "Record fetched successfully!"];
             return response($response, 200);
         } catch (Exception $e) {

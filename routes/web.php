@@ -71,6 +71,9 @@ Route::prefix('administrator')->group(function () {
         Route::get('/logout', [AdminController::class, 'logout'])->name('admin.logout');
         Route::get('/all-staff', [AdminController::class, 'allStaff'])->name('admin.allStaff');
 
+        Route::get('/active-account/{id}', [AdminController::class, 'activeaccount'])->name('admin.activeaccount');
+        Route::get('/block-account/{id}', [AdminController::class, 'blockaccount'])->name('admin.blockaccount');
+
 
 
         Route::get('/categories', [CategoryController::class, 'categories'])->name('admin.categories');

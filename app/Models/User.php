@@ -77,4 +77,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Shifts::class, 'user_id', 'id');
     }
+    public function location()
+    {
+        return $this->hasMany(Location::class, 'user_id', 'id');
+    }
 }
