@@ -168,22 +168,19 @@ class AuthenticateController extends Controller
         if ($found == 0) {
             return redirect()->back()->with('error', 'Email or password is invalid!');
         }
-        if($data->role == 'User')
-        {
+        if ($data->role == 'User') {
             $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
+            if (Auth::attempt($credentials)) {
 
-            if ($data->status == 0) {
-                return redirect()->route('user.verify_account')->with('error', 'Your account is not verified. Please verify your account. Thank you!');
+                if ($data->status == 0) {
+                    return redirect()->route('user.verify_account')->with('error', 'Your account is not verified. Please verify your account. Thank you!');
+                } else {
+                    return redirect('/');
+                }
             } else {
-                return redirect('/');
+                return redirect()->back()->with('error', 'Email or password is invalid!');
             }
         } else {
-            return redirect()->back()->with('error', 'Email or password is invalid!');
-        }
-        }
-        else
-        {
             return redirect()->back()->with('error', 'User role is invalid!');
         }
     }
