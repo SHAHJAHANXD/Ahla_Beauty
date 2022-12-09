@@ -31,7 +31,7 @@ class ImageController extends Controller
             }
             $image = Images::where('rand', $rand)->get();
             if ($user == true) {
-                $response = ['status' => true, 'data' => $image, 'message' => "Image is uploaded successfully!"];
+                $response = ['status' => true, 'data' => $image[0], 'message' => "Image is uploaded successfully!"];
                 return response($response, 200);
             } else {
                 $response = ['status' => false, 'message' => "Something went wrong. Please try again later. Thank you!"];

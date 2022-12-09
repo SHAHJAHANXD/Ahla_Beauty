@@ -197,6 +197,32 @@ class UserController extends Controller
             return response($response, 400);
         }
     }
+    public function EditUserLocation(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'errors' => $validator->errors()]);
+            }
+            $location =  Location::where('id' , $request->id)->first();
+            $location->lat = $request->lat;
+            $location->lng = $request->lng;
+            $location->address = $request->address;
+            $location->save();
+            if ($location == true) {
+                $response = ['status' => true, 'data' => $location, 'message' => "Record Updated Successfully. Thank you!"];
+                return response($response, 200);
+            } else {
+                $response = ['status' => false, 'data' => null, 'message' => "Something went wrong. Please try again later. Thank you!"];
+                return response($response, 400);
+            }
+        } catch (Exception $e) {
+            $response = ['status' => false, 'data' => null, 'message' => $e->getMessage()];
+            return response($response, 400);
+        }
+    }
     public function UserLocation(Request $request)
     {
         try {

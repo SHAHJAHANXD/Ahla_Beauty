@@ -50,6 +50,7 @@ Route::prefix('order')->group(function () {
 });
 Route::post('/save-location', [UserController::class, 'Location'])->name('user.Location')->middleware('auth:api');
 Route::get('/get-user-location', [UserController::class, 'UserLocation'])->name('user.UserLocation')->middleware('auth:api');
+Route::post('/edit-user-location', [UserController::class, 'EditUserLocation'])->name('user.EditUserLocation')->middleware('auth:api');
 Route::get('/delete-user-location/{id}', [UserController::class, 'DeleteLocation'])->name('user.DeleteLocation')->middleware('auth:api');
 
 Route::post('/save-banner', [BannerController::class, 'SaveBanner'])->name('user.SaveBanner')->middleware('auth:api');
